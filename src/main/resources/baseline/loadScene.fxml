@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.media.MediaView?>
+
+<StackPane fx:id="pane" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="baseline.LoadSceneController">
+   <children>
+      <Pane fx:id="paneColor" prefHeight="720.0" prefWidth="1280.0" />
+      <MediaView fx:id="loadView" preserveRatio="false">
+         <viewport>
+            <Rectangle2D />
+         </viewport>
+      </MediaView>
+      <MediaView fx:id="menuView" preserveRatio="false">
+         <viewport>
+            <Rectangle2D />
+         </viewport>
+      </MediaView>
+      <HBox alignment="BOTTOM_LEFT" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <Label fx:id="versionLabel" opacity="0.0" text="InventoryCraft v1.0">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </Label>
+         </children>
+      </HBox>
+      <HBox fx:id="hBox" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <VBox fx:id="vBox" alignment="TOP_CENTER">
+               <children>
+                  <Pane fx:id="pane1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="350.0" />
+                  <Button fx:id="sceneButton" alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#changeSceneToMenu" opacity="0.0" prefHeight="50.0" prefWidth="500.0" text="Start Application" />
+                  <Pane fx:id="pane2" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="20.0" />
+                  <Button fx:id="userGuideButton" alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#openUserGuide" opacity="0.0" prefHeight="50.0" prefWidth="500.0" text="Open User Guide" />
+                  <Pane fx:id="pane3" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="20.0" />
+                  <Button fx:id="exitButton" alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#closeWindow" opacity="0.0" prefHeight="50.0" prefWidth="500.0" text="Exit Application" />
+                  <Pane fx:id="pane4" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="180.0" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+</StackPane>

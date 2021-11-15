@@ -1,0 +1,146 @@
+.root {
+     -fx-background-image: url("image/dirtbackground.png");
+     -fx-font-family: 'Minecraft';
+     -fx-font-size: 20pt;
+}
+.button {
+    -fx-background-image: url("image/button.png");
+    -fx-text-fill: #FFFFFF;
+    -fx-text-effect: dropshadow(one-pass-box,rgb(0,0,0),10,0,5,5);
+    -fx-background-size: stretch;
+    -fx-background-position:left top;
+    -fx-padding: 0;
+    -fx-border-color: #000000;
+    -fx-border-width: 4;
+    -text-align: center;
+    -display: table-cell;
+    -margin: auto
+}
+.split-menu-button {
+    -fx-background-image: url("image/button.png");
+    -fx-text-fill: #FFFFFF;
+    -fx-text-effect: dropshadow(one-pass-box,rgb(0,0,0),10,0,5,5);
+    -fx-background-size: stretch;
+    -fx-background-position:left top;
+    -fx-padding: 0;
+    -fx-border-color: #000000;
+    -fx-border-width: 4;
+    -text-align: center;
+    -display: table-cell;
+    -margin: auto
+}
+.button:hover {
+    -fx-border-color: #FFFFFF;
+}
+.radio-button {
+    -fx-text-fill: #FFFFFF;
+    -fx-text-effect: dropshadow(one-pass-box,rgb(0,0,0),10,0,5,5);
+    -fx-padding: 1px;
+    -margin: auto;
+    -fx-font-size: 14pt;
+}
+.radio-button .radio {
+    -fx-border-width: 4px;
+    -fx-border-color: black;
+    -fx-background-color: #c0c0c0;
+    -fx-background-image: null;
+    -fx-border-radius: 15px;
+    -fx-padding: 4px;
+}
+.radio-button .radio:selected {
+    -fx-background-color: white;
+    -fx-background-image: null;
+}
+.radio-button -radio:armed {
+    -fx-background-color: white;
+    -fx-background-image: null;
+}
+.radio-button -radio:determinate {
+    -fx-background-color: white;
+    -fx-background-image: null;
+}
+.radio-button -radio:indeterminate {
+    -fx-background-color: white;
+    -fx-background-image: null;
+}
+.radio-button .dot {
+    -fx-background-radius: 15px;
+    -fx-padding: 8px;
+}
+.radio-button .radio :hover {
+    -fx-border-color: transparent;
+}
+.label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: 'Minecraft';
+    -fx-font-size: 20pt;
+}
+.text-field {
+    -fx-font-family: 'Minecraft';
+    -fx-font-size: 20pt;
+    -fx-text-fill: white;
+    -fx-border-color: #c0c0c0;
+    -fx-border-weight: 4pt;
+    -fx-background-color: black;
+    -fx-border-radius: 0pt;
+    -fx-border-insets: 0 0 0 0;
+    -fx-pref-width: 600;
+    -fx-pref-height: 65;
+}
+.text-field: hover {
+    -fx-border-color: white;
+}
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color: #000000;
+    -fx-border-radius: 0px;
+}
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #c0c0c0;
+    -fx-border-radius: 0px;
+    -fx-border-style: none;
+}
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 10.0 0.0 0.0;
+}
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow {
+    -fx-shape : " ";
+    -fx-padding :0.0 0.15em;
+}
+.stack-pane {
+    -fx-border-color: transparent;
+    -fx-border-weight: 0;
+    -fx-border-insets: 0;
+    -fx-border-style: none;
+    -fx-background-color: transparent;
+    -fx-background-image: url("image/middlebackground.png");
+}
+.table-view {
+    -fx-border-color: transparent;
+    -fx-border-weight: 0;
+    -fx-border-insets: 0;
+    -fx-border-style: none;
+    -fx-background-color: transparent;
+
+}
+.table-view .column-header,
+.table-view .column-header .filler,
+.table-view .column-header-background .filler {
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 4 0;
+    -fx-border-color: #c0c0c0;
+    -fx-background-image: url("image/middlebackground.png");
+}
+.table-view .column-header .label {
+    -fx-alignment: center-right;
+    -fx-font-size: 16pt;
+    -fx-font-weight: bold;
+    -fx-padding: 0 10 0 0;
+}
+
+
