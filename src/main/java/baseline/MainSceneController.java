@@ -5,7 +5,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.media.AudioClip;
@@ -123,42 +122,39 @@ public class MainSceneController {
     @FXML
     private HBox topControls;
 
+    // Declare a fxml loader
+    private FXMLLoader root;
+
+    // Declare the loaded scene
+    private Parent scene;
+
     // Initialize button-click sounds
-    AudioClip buttonSoundPlayer = new AudioClip(getClass().getResource("sound/buttonClick.mp3").toExternalForm());
-    AudioClip smallButtonSoundPlayer = new AudioClip(getClass().getResource("sound/smallButtonClick.mp3").toExternalForm());
+    private final AudioClip buttonSoundPlayer = new AudioClip(getClass().getResource("sound/buttonClick.mp3").toExternalForm());
+    private final AudioClip smallButtonSoundPlayer = new AudioClip(getClass().getResource("sound/smallButtonClick.mp3").toExternalForm());
 
     // Call constructor to save inventory
-    public MainSceneController(List<Item> inventory) {
+    public MainSceneController(List<Item> inventory, Stage stage) {
         this.inventory = inventory;
 
-        // display the scene
-        display();
-    }
-
-    // Display the scene
-    private void display() {
+        // load the correct fxml file
+        root = null;
+        scene = null;
         try {
-            // load fxml file
-            Parent newRoot = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("mainScene.fxml")));
-
-            // set new stage
-            Stage newStage = (Stage)(pane.getScene().getWindow());
-            Scene newScene = new Scene(newRoot);
-            newStage.setScene(newScene);
-            newStage.show();
+            root = new FXMLLoader(Objects.requireNonNull(getClass().getResource("mainScene.fxml")));
+            root.setController(this);
+            scene = root.load();
         }
-        // file count not be found
-        catch (IOException ioException) {
-            ioException.printStackTrace();
+        catch (IOException e) {
+            e.printStackTrace();
+            return;
         }
+        // open the scene
+        stage.getScene().setRoot(scene);
+        stage.show();
     }
 
     // Initialize values
-    @FXML
     public void initialize() {
-        // display the scene
-        display();
-
         // change middle background values
         middleControls.setStyle("-fx-background-image: url('/baseline/image/middlebackground.png')");
         itemView.setStyle("-fx-background-image: url('/baseline/image/tablebackground.png')");
@@ -197,7 +193,7 @@ public class MainSceneController {
         buttonSoundPlayer.play();
 
         // open fxml for handling new item creation
-        new CreateNewItemController(pane.getScene(),inventory);
+        new ItemController(inventory,(Stage)scene.getScene().getWindow());
     }
 
     // Delete all items, but open new scene for confirmation
@@ -205,6 +201,9 @@ public class MainSceneController {
     void deleteAllItems(ActionEvent event) {
         // play click sound
         buttonSoundPlayer.play();
+
+        // open fxml for handling new item creation
+        new DeleteAllItemsController(inventory,(Stage)scene.getScene().getWindow());
     }
 
     // Delete currently selected item, but open new scene for confirmation
@@ -219,6 +218,9 @@ public class MainSceneController {
     void editItem(ActionEvent event) {
         // play click sound
         buttonSoundPlayer.play();
+
+        // pull up itemScene
+        new ItemController(inventory,(Stage)scene.getScene().getWindow());
     }
 
     // Open a new scene where the user can use a file chooser to select a saved inventory
@@ -226,6 +228,9 @@ public class MainSceneController {
     void loadInventory(ActionEvent event) {
         // play click sound
         buttonSoundPlayer.play();
+
+        // open fxml for handling saving an inventory
+        new ImportController(inventory,(Stage)scene.getScene().getWindow());
     }
 
     // Open a new scene where the user can save the current inventory to the local machine
@@ -233,6 +238,9 @@ public class MainSceneController {
     void saveInventory(ActionEvent event) {
         // play click sound
         buttonSoundPlayer.play();
+
+        // open fxml for handling saving an inventory
+        new SaveController(inventory,(Stage)scene.getScene().getWindow());
     }
 
     // Search for an item in the list depending on the search query, and display only the results on the list

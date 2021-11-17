@@ -159,7 +159,7 @@ public class LoadSceneController {
         soundPlayer.play();
 
         // set the scene to a new window
-        MainSceneController scene = new MainSceneController(new ArrayList<>());
+        MainSceneController scene = new MainSceneController(new ArrayList<>(),(Stage)(pane.getScene().getWindow()));
     }
 
     // Method which closes the system

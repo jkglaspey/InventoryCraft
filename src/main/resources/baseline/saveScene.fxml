@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+         <children>
+            <Pane prefHeight="51.0" />
+            <Label text="File Type:" />
+            <HBox alignment="CENTER">
+               <children>
+                  <RadioButton fx:id="tsvButton" mnemonicParsing="false" onAction="#clickTSVButton" selected="true" text="TSV">
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                     <toggleGroup>
+                        <ToggleGroup fx:id="fileButtons" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="htmlButton" mnemonicParsing="false" onAction="#clickHTMLButton" text="HTML" toggleGroup="$fileButtons">
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                  </RadioButton>
+                  <RadioButton fx:id="jsonButton" mnemonicParsing="false" onAction="#clickJSONButton" text="JSON" toggleGroup="$fileButtons" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="50.0" />
+               </VBox.margin>
+            </HBox>
+            <Label stylesheets="@footnote.css" text="Name:">
+               <padding>
+                  <Insets right="539.0" />
+               </padding>
+            </Label>
+            <HBox alignment="CENTER" prefWidth="600.0">
+               <children>
+                  <VBox alignment="CENTER">
+                     <children>
+                        <TextField fx:id="fileNameField" onAction="#enterName" />
+                     </children>
+                  </VBox>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="50.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox fx:id="hBox" alignment="CENTER">
+               <children>
+                  <Button fx:id="chooseFileButton" mnemonicParsing="false" onAction="#chooseFile" prefHeight="50.0" prefWidth="280.0" text="Choose File Path: ">
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Label fx:id="filePathLabel" maxWidth="980.0" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="100.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER">
+               <children>
+                  <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveItems" prefHeight="50.0" prefWidth="500.0" text="Save Items">
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancel" prefHeight="50.0" prefWidth="500.0" text="Cancel" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="20.0" />
+               </VBox.margin>
+            </HBox>
+            <Label fx:id="errorLabel" opacity="0.0" stylesheets="@footnote.css" text="Enter a valid file path!" />
+         </children>
+         <StackPane.margin>
+            <Insets />
+         </StackPane.margin>
+      </VBox>
+   </children>
+</StackPane>

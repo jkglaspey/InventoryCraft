@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="pane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="baseline.MainSceneController">
+<StackPane fx:id="pane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox fx:id="bindPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
          <children>
@@ -78,7 +78,7 @@
             <HBox fx:id="middleControls" prefHeight="448.0" prefWidth="1280.0">
                <children>
                   <Pane fx:id="positionPane3" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="200.0" />
-                  <TableView fx:id="itemView" nodeOrientation="RIGHT_TO_LEFT" prefHeight="448.0" prefWidth="880.0" HBox.hgrow="ALWAYS">
+                  <TableView fx:id="itemView" editable="true" nodeOrientation="RIGHT_TO_LEFT" prefHeight="448.0" prefWidth="880.0" HBox.hgrow="ALWAYS">
                     <columns>
                       <TableColumn fx:id="monetaryColumn" maxWidth="1.7976931348623157E308" prefWidth="175.0" resizable="false" text="Cost ($)" />
                       <TableColumn fx:id="serialColumn" maxWidth="1.7976931348623157E308" prefWidth="250.0" resizable="false" text="Serial Number" />
