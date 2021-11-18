@@ -16,14 +16,14 @@ public class Item {
     private String serialNumber;
 
     // Declare variable for holding the cost
-    private double cost;
+    private String cost;
 
     // Initialize the item object
     public Item(String name, String serialNumber, String cost) {
         // copy parameter items to the instance variables
         this.name = name;
         this.serialNumber = serialNumber;
-        this.cost = Integer.parseInt(cost);
+        this.cost = cost;
     }
 
     // Get the item name
@@ -48,13 +48,13 @@ public class Item {
     }
 
     // Get the item cost
-    public double getCost() {
+    public String getCost() {
         return cost;
     }
 
     // Set the item cost
     // Precondition: String can be cast to double
     public void setCost(String cost) {
-        this.cost = Integer.parseInt(cost);
+        this.cost = cost;
     }
 }

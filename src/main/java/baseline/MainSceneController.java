@@ -211,6 +211,8 @@ public class MainSceneController {
         monetaryColumn.setOnEditCommit( t -> (
                 t.getTableView().getItems().get(t.getTablePosition().getRow())).setCost(t.getNewValue()));
 
+        listOfItems.add(new Item("Name test","Serial Test", "42.00"));
+
         // set the values in the table to the observable list
         itemView.setItems(listOfItems);
     }

@@ -126,7 +126,9 @@
     -fx-border-insets: 0;
     -fx-border-style: none;
     -fx-background-color: transparent;
-
+}
+.table-view:focused{
+    -fx-background-color: transparent;
 }
 .table-view .column-header,
 .table-view .column-header .filler,
@@ -141,6 +143,19 @@
     -fx-font-size: 16pt;
     -fx-font-weight: bold;
     -fx-padding: 0 10 0 0;
+}
+.table-row-cell{
+    -fx-background-color: transparent;
+    -fx-alignment: CENTER-LEFT;
+    -fx-font-color: #c0c0c0;
+}
+.table-row-cell:selected {
+    -fx-background-color: transparent;
+    -fx-border-width: 2;
+    -fx-border-color: #c0c0c0;
+}
+.table-column {
+    -fx-border-color: transparent;
 }
 
 
