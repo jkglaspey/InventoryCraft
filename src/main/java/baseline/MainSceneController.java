@@ -211,7 +211,8 @@ public class MainSceneController {
         monetaryColumn.setOnEditCommit( t -> (
                 t.getTableView().getItems().get(t.getTablePosition().getRow())).setCost(t.getNewValue()));
 
-        listOfItems.add(new Item("Name test","Serial Test", "42.00"));
+        listOfItems.add(new Item("Name 1","Serial 1", "1"));
+        listOfItems.add(new Item("Name 2","Serial 2", "2"));
 
         // set the values in the table to the observable list
         itemView.setItems(listOfItems);
@@ -278,8 +279,25 @@ public class MainSceneController {
         // play click sound
         buttonSoundPlayer.play();
 
+        // get index of selected item
+        int index = getIndex(itemView.getSelectionModel().getSelectedItem());
+
+        // fail check
+        if(index < 0) return;
+
         // pull up itemScene
-        new ItemController(inventory,(Stage)scene.getScene().getWindow());
+        new ItemController(inventory,index,(Stage)scene.getScene().getWindow());
+    }
+
+    // Search for the index of an item by serial number
+    private int getIndex(Item item) {
+        for(int i = 0; i < inventory.size(); i++) {
+            // compare serial numbers and break when unique duplicate is found
+            if(inventory.get(i).getSerialNumber().equals(item.getSerialNumber())) return i;
+        }
+
+        // search fails
+        return -1;
     }
 
     // Open a new scene where the user can use a file chooser to select a saved inventory
