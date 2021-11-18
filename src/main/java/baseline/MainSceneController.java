@@ -1,3 +1,10 @@
+/*
+ *  UCF COP3330 Fall 2021 Application Assignment 2 Solution
+ *  Copyright 2021 Joshua Glaspey
+ */
+
+// The purpose of this class is to display the inventory as well as provide the controls for managing the list.
+
 package baseline;
 
 import javafx.collections.ObservableList;
@@ -132,8 +139,9 @@ public class MainSceneController {
     private final AudioClip buttonSoundPlayer = new AudioClip(getClass().getResource("sound/buttonClick.mp3").toExternalForm());
     private final AudioClip smallButtonSoundPlayer = new AudioClip(getClass().getResource("sound/smallButtonClick.mp3").toExternalForm());
 
-    // Call constructor to save inventory
+    // Call constructor to display the inventory to the user
     public MainSceneController(List<Item> inventory, Stage stage) {
+        // copy items to be displayed
         this.inventory = inventory;
 
         // load the correct fxml file
@@ -211,6 +219,11 @@ public class MainSceneController {
     void deleteItem(ActionEvent event) {
         // play click sound
         buttonSoundPlayer.play();
+
+        // if there is a currently selected item in the tableview
+            // grab the item
+            // remove it
+            // refresh the table
     }
 
     // Edit the currently-selected item in a new scene
@@ -248,18 +261,31 @@ public class MainSceneController {
     void searchForItem(ActionEvent event) {
         // play click sound
         buttonSoundPlayer.play();
+
+        // if the radio button for "Name" is selected, call searchForName()
+        // if the radio button for "Serial Number" is selected, call searchForSerialNumber()
+
+        // refresh the table with updated listOfItems
+    }
+
+    // Search for a specific item name in the inventory
+    private void searchForName(String name) {
+        // empty listOfItems
+        // loop through inventory
+            // if the inventory string contains name, add the item to list
+    }
+
+    // Search for a specific item serial number in the inventory
+    private void searchForSerialNumber(String serialNumber) {
+        // empty listOfItems
+        // remove the hyphens, if any, from serialNumber (give the user a little slack)
+        // loop through inventory
+            // if the inventory string contains serialNumber, add the item to list
     }
 
     // Change the search query to "Name"
     @FXML
-    void setSearchQueryToName(ActionEvent event) {
-        // play click sound
-        smallButtonSoundPlayer.play();
-    }
-
-    // Change the search query to "Serial Number"
-    @FXML
-    void setSearchQueryToSerial(ActionEvent event) {
+    void playSmallClickSound(ActionEvent event) {
         // play click sound
         smallButtonSoundPlayer.play();
     }

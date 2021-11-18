@@ -19,7 +19,7 @@
             <Label text="File Type:" />
             <HBox alignment="CENTER">
                <children>
-                  <RadioButton fx:id="tsvButton" mnemonicParsing="false" onAction="#clickTSVButton" selected="true" text="TSV">
+                  <RadioButton fx:id="tsvButton" mnemonicParsing="false" onAction="#playSmallButtonClick" selected="true" text="TSV">
                      <HBox.margin>
                         <Insets right="20.0" />
                      </HBox.margin>
@@ -27,12 +27,12 @@
                         <ToggleGroup fx:id="fileButtons" />
                      </toggleGroup>
                   </RadioButton>
-                  <RadioButton fx:id="htmlButton" mnemonicParsing="false" onAction="#clickHTMLButton" text="HTML" toggleGroup="$fileButtons">
+                  <RadioButton fx:id="htmlButton" mnemonicParsing="false" onAction="#playSmallButtonClick" text="HTML" toggleGroup="$fileButtons">
                      <HBox.margin>
                         <Insets right="20.0" />
                      </HBox.margin>
                   </RadioButton>
-                  <RadioButton fx:id="jsonButton" mnemonicParsing="false" onAction="#clickJSONButton" text="JSON" toggleGroup="$fileButtons" />
+                  <RadioButton fx:id="jsonButton" mnemonicParsing="false" onAction="#playSmallButtonClick" text="JSON" toggleGroup="$fileButtons" />
                </children>
                <VBox.margin>
                   <Insets bottom="50.0" />

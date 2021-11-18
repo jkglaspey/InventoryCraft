@@ -57,11 +57,11 @@
                         </Label>
                         <VBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="130.0">
                            <children>
-                              <RadioButton fx:id="buttonName" mnemonicParsing="false" onAction="#setSearchQueryToName" prefHeight="30.0" selected="true" text="Name">
+                              <RadioButton fx:id="buttonName" mnemonicParsing="false" onAction="#playSmallClickSound" prefHeight="30.0" selected="true" text="Name">
                                  <toggleGroup>
                                     <ToggleGroup fx:id="searchButtons" />
                                  </toggleGroup></RadioButton>
-                              <RadioButton fx:id="serialButton" mnemonicParsing="false" onAction="#setSearchQueryToSerial" text="Serial #" toggleGroup="$searchButtons" />
+                              <RadioButton fx:id="serialButton" mnemonicParsing="false" onAction="#playSmallClickSound" text="Serial #" toggleGroup="$searchButtons" />
                            </children>
                            <padding>
                               <Insets left="5.0" />

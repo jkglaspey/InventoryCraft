@@ -32,7 +32,7 @@
                               </Label>
                            </children>
                         </HBox>
-                        <TextField fx:id="nameTextField" onAction="#enterName" prefWidth="600.0" />
+                        <TextField fx:id="nameTextField" onAction="#playButtonClick" prefWidth="600.0" />
                         <Label stylesheets="@footnote.css" text="Between 2-256 characters">
                            <VBox.margin>
                               <Insets bottom="20.0" />
@@ -45,7 +45,7 @@
                               <Label fx:id="errorSerialLabel" opacity="0.0" stylesheets="@footnote.css" text="Must be in the correct format!" />
                            </children>
                         </HBox>
-                        <TextField fx:id="serialTextField" onAction="#enterSerial" />
+                        <TextField fx:id="serialTextField" onAction="#playButtonClick" />
                         <Label stylesheets="@footnote.css" text="In the format: A-XXX-XXX-XXX ">
                            <VBox.margin>
                               <Insets bottom="20.0" />
@@ -58,7 +58,7 @@
                               <Label fx:id="errorCostLabel" opacity="0.0" stylesheets="@footnote.css" text="Must be numerical!" />
                            </children>
                         </HBox>
-                        <TextField fx:id="costTextField" onAction="#enterCost" />
+                        <TextField fx:id="costTextField" onAction="#playButtonClick" />
                         <Label stylesheets="@footnote.css" text="Will be saved to 2 decimal places">
                            <VBox.margin>
                               <Insets bottom="20.0" />
