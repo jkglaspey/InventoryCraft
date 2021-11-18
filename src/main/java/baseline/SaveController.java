@@ -7,6 +7,9 @@
 
 package baseline;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,8 +26,10 @@ import javafx.scene.media.AudioClip;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.Format;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Objects;
@@ -173,6 +178,7 @@ public class SaveController {
             isErrorLabelVisible(true);
 
             // leave method
+            return;
         }
 
         // set error label invisible
@@ -182,10 +188,14 @@ public class SaveController {
         RadioButton selectedButton = (RadioButton)fileButtons.getSelectedToggle();
         String fileType = selectedButton.getText();
 
-        // determine which file type the inventory is being exported as
         // if TSV, call saveToTSV()
+        if(fileType.equals("TSV")) saveToTSV(filePathLabel.getText(),fileNameField.getText());
+
         // if JSON, call saveToJSON()
+        else if(fileType.equals("JSON")) saveToJSON(filePathLabel.getText(),fileNameField.getText());
+
         // if html, call saveToHTML()
+        else if(fileType.equals("HTML")) saveToHTML(filePathLabel.getText(),fileNameField.getText());
 
         // return to old screen
         new MainSceneController(inventory,(Stage)(pane.getScene().getWindow()));
@@ -194,15 +204,14 @@ public class SaveController {
     // Method which determines the validity of the specified file path
     // Note: this is only for if the user decides to delete the file path after specifying it
     private boolean isFilePathInvalid(String path) {
-        // use Paths class
-        // if Paths.find(path) does not throw an exception, return true
-        // if an exception is thrown, return false
+        return !(Files.exists(Paths.get(path)));
     }
 
     // Method which changes the visibility of the error message
     private void isErrorLabelVisible(boolean value) {
-        // if true, set the error label opacity to 1
-        // if false, set the error label opacity to 0
+        // set label visibility
+        if(value) errorLabel.setOpacity(1.0);
+        else errorLabel.setOpacity(0.0);
     }
 
     // Save the inventory to a TSV file
@@ -210,20 +219,46 @@ public class SaveController {
         // combine the file path, name, and extension
         String save = combinePath(path, name, ".txt");
 
-        // create a file from the string path
-        // try to create a formatter stream to the file
-        // if exception is thrown:
-            // change error label to visible
-            // leave method
-        // for each Item in inventory
-            // create a new String builder
-            // add the serial number
-            // add "\t"
+        // attempt to initialize an output stream
+        File file = null;
+        Formatter stream = null;
+        try {
+            // create a file from the string path
+            file = new File(save);
+
+            // create a formatter stream to the file
+            stream = new Formatter(new FileOutputStream(file));
+        }
+        // file was not found
+        catch (FileNotFoundException e) {
+            // set error label to visible
+            isErrorLabelVisible(true);
+            return;
+        }
+
+        // append each item to the TSV file
+        for(Item i : inventory) {
+            // create a new String builder with the serial number as the first value
+            StringBuilder temp = new StringBuilder(i.getSerialNumber());
+
+            // add tab
+            temp.append("\t");
+
             // add the name
-            // add "\t"
+            temp.append(i.getName());
+
+            // add tab
+            temp.append("\t");
+
             // add the cost
+            temp.append(i.getCost());
+
             // write to new line in file
+            stream.format("%s\n",temp.toString());
+        }
+
         // close Formatter
+        stream.close();
     }
 
     // Save the inventory to a JSON file
@@ -231,22 +266,32 @@ public class SaveController {
         // combine the file path, name, and extension
         String save = combinePath(path,name,".json");
 
-        // create a new JsonArray
-        // loop through inventory
-            // add a new JsonObject
-            // add a temp JsonObject "temp"
-            // Put serial number into "serial" category of temp
-            // Put name into "name" category of temp
-            // Put cost into "cost" category of temp
-            // Put the temp into the "item" category of the original JsonObject
-            // Put the original JsonObject into the JsonArray
-        // try:
-            // to create a file from the string path
-            // to create a new formatter at the file path
-            // to write the JSON array to the created file as a string
-        // if exception is thrown:
-            // change error label to visible
-            // leave method
+        // try to write to output file
+        try {
+            // create new file writer
+            FileWriter stream = new FileWriter(save);
+
+            // loop through inventory
+            for (Item i : inventory) {
+                // create new Gson
+                Gson gson = new Gson();
+
+                // write to json file
+                gson.toJson(i, stream);
+            }
+
+            // close stream
+            stream.close();
+        }
+        // unhandled file error
+        catch (IOException ioException) {
+            // set error label to visible
+            isErrorLabelVisible(true);
+
+            // delete partially created file (if it exists)
+            File deleteFile = new File(save);
+            deleteFile.delete();
+        }
     }
 
     // Save the inventory to a HTML file
@@ -255,26 +300,41 @@ public class SaveController {
         String save = combinePath(path,name,".html");
 
         // create a file from the string path
+        File file = new File(save);
+
         // try to create a formatter stream to the file
-        // if exception is thrown:
-            // change error label to visible
+        Formatter stream = null;
+        try {
+            stream = new Formatter(new FileOutputStream(file));
+        }
+        // unhandled file error
+        catch (FileNotFoundException e) {
+            // set error label to visible
+            isErrorLabelVisible(true);
+
             // leave method
+            return;
+        }
+
         // write a basic heading
-            // stream.format("<html><head><title>%s</title></head><body>",name);
-            // stream.format("<table><tr><th>Serial Number</th><th>Name</th><th>Cost (S)<t/h>);
+        stream.format("<html><head><title>%s</title></head><body>",name);
+        stream.format("<table><tr><th>Serial Number</th><th>Name</th><th>Cost ($)<t/h>");
+
         // loop through inventory
-            // format "<tr>"
-            // format "<td>" + serial number of item + "</td>"
-            // format "<td>" + name of item + "</td>"
-            // format "<td>" + cost of item + "</td>"
-            // format "</tr>"
+        for(Item i: inventory) {
+            // write line using current item
+            stream.format("<tr><td>%s</td><td>%s</td><td>%s</td></tr>",i.getSerialNumber(),i.getName(),i.getCost());
+        }
         // write closing tags
-            // stream.format("<\table></body></html>");
+        stream.format("<\table></body></html>");
+
         // close stream
+        stream.close();
     }
 
     // Concatenate parts of a string together
     private String combinePath(String path, String name, String extension) {
-        // return the combined string using StringBuilder
+        // return the combined string
+        return path + name + extension;
     }
 }

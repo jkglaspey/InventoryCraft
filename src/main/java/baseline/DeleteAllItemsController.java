@@ -41,6 +41,7 @@ public class DeleteAllItemsController {
     // Declare the loaded scene
     private Parent scene;
 
+    // Initialize the scene
     public DeleteAllItemsController(List<Item> inventory, Stage stage) {
         // copy the inventory
         this.inventory = inventory;
@@ -76,7 +77,8 @@ public class DeleteAllItemsController {
         // play button sound
         buttonSoundPlayer.play();
 
-        // clear inventory by using clear() on inventory
+        // empty inventory
+        inventory.clear();
 
         // return to old screen
         new MainSceneController(inventory,(Stage)(cancelButton.getScene().getWindow()));

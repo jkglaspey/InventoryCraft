@@ -7,12 +7,15 @@
 
 package baseline;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.*;
 import javafx.scene.media.AudioClip;
 import javafx.stage.Stage;
@@ -52,7 +55,7 @@ public class MainSceneController {
     private TableView<Item> itemView;
 
     // Declare observable list for holding only the viewable items (either ALL or searched results)
-    private ObservableList<Item> listOfItems;
+    private ObservableList<Item> listOfItems = FXCollections.observableArrayList();
 
     // Declare list for holding all items in an inventory
     private List<Item> inventory;
@@ -186,12 +189,44 @@ public class MainSceneController {
         middleControls.setHgrow(positionPane4,Priority.ALWAYS);
         bottomControls.setHgrow(positionPane5,Priority.ALWAYS);
         bottomControls.setHgrow(positionPane6,Priority.ALWAYS);
+
+        // get values from inventory
+        resetListToInventory();
+
+        // initialize the description column
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        nameColumn.setOnEditCommit( t -> (
+                t.getTableView().getItems().get(t.getTablePosition().getRow())).setName(t.getNewValue()));
+
+        // initialize the date column
+        serialColumn.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
+        serialColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        serialColumn.setOnEditCommit( t -> (
+                t.getTableView().getItems().get(t.getTablePosition().getRow())).setSerialNumber(t.getNewValue()));
+
+        // initialize the status column
+        monetaryColumn.setCellValueFactory(new PropertyValueFactory<>("cost"));
+        monetaryColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        monetaryColumn.setOnEditCommit( t -> (
+                t.getTableView().getItems().get(t.getTablePosition().getRow())).setCost(t.getNewValue()));
+
+        // set the values in the table to the observable list
+        itemView.setItems(listOfItems);
     }
 
     // refresh the table view to update values
     private void refreshTable() {
         nameColumn.setVisible(false);
         nameColumn.setVisible(true);
+    }
+
+    // reset values in list to inventory
+    private void resetListToInventory() {
+        // copy inventory to list
+        for(Item i: inventory) {
+            listOfItems.add(i);
+        }
     }
 
     // Create a new item by opening a new scene
@@ -221,9 +256,18 @@ public class MainSceneController {
         buttonSoundPlayer.play();
 
         // if there is a currently selected item in the tableview
-            // grab the item
-            // remove it
-            // refresh the table
+        // get the selected item
+        Item selectedItem = itemView.getSelectionModel().getSelectedItem();
+
+        // if item is null, leave
+        if(selectedItem == null) return;
+
+        // remove it
+        inventory.remove(selectedItem);
+        listOfItems.remove(selectedItem);
+
+        // refresh the table
+        refreshTable();
     }
 
     // Edit the currently-selected item in a new scene
@@ -262,25 +306,36 @@ public class MainSceneController {
         // play click sound
         buttonSoundPlayer.play();
 
-        // if the radio button for "Name" is selected, call searchForName()
-        // if the radio button for "Serial Number" is selected, call searchForSerialNumber()
+        // if name button is selected, search by name
+        if( ((RadioButton)searchButtons.getSelectedToggle()).getText().equals("Name")) searchForName(textPane.getText());
+
+        // otherwise, search by serial #
+        else searchForSerialNumber(textPane.getText());
 
         // refresh the table with updated listOfItems
+        refreshTable();
     }
 
     // Search for a specific item name in the inventory
     private void searchForName(String name) {
         // empty listOfItems
-        // loop through inventory
-            // if the inventory string contains name, add the item to list
+        listOfItems.clear();
+
+        // if the inventory string contains name, add the item to list
+        for(Item i: inventory) {
+            if(i.getName().contains(name)) listOfItems.add(i);
+        }
     }
 
     // Search for a specific item serial number in the inventory
     private void searchForSerialNumber(String serialNumber) {
         // empty listOfItems
-        // remove the hyphens, if any, from serialNumber (give the user a little slack)
-        // loop through inventory
-            // if the inventory string contains serialNumber, add the item to list
+        listOfItems.clear();
+
+        // if the inventory string contains serialNumber, add the item to list
+        for(Item i: inventory) {
+            if(i.getSerialNumber().contains(serialNumber)) listOfItems.add(i);
+        }
     }
 
     // Change the search query to "Name"

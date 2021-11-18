@@ -172,12 +172,20 @@ public class ItemController {
         errorCostLabel.setStyle("-fx-text-fill: red");
         errorBlankLabel.setStyle("-fx-text-fill: red");
 
-        // if the item index < inventory size (edit item)
-            // copy the item name to the name text field
-            // copy the item serial number to the serial text field
-            // copy the item cost to the cost text field
+        // determine which button was pressed
+        if(index < inventory.size()) {
+            // copy the item fields to text fields
+            nameTextField.setText(inventory.get(index).getName());
+            serialTextField.setText(inventory.get(index).getSerialNumber());
+            costTextField.setText(String.valueOf(inventory.get(index).getCost()));
+
             // change the confirm button text to "Edit Item"
-        // otherwise change the confirm button text to "Create New Item"
+            confirmButton.setText("Edit Item");
+        }
+        // "create new item" was selected
+        else {
+            confirmButton.setText("Create New Item");
+        }
     }
 
     // Cancel the current action
@@ -209,9 +217,11 @@ public class ItemController {
         String cost = costTextField.getText();
 
         // verify there are no errors
-        if(isNoErrors()) {
-            // if the index == size, add a new item to the inventory using the declared strings
-            // otherwise, set the index position in the inventory to a new item using the declared strings
+        if(isNoErrors(name,serialNumber,cost)) {
+            // if creating a new item, add a new item to the end of the list
+            if(index == inventory.size()) inventory.add(new Item(name,serialNumber,cost));
+            // otherwise, set the item at index to a new item using the declared strings
+            else inventory.set(index, new Item(name, serialNumber, cost));
 
             // reload other scene
             new MainSceneController(inventory,(Stage)(pane.getScene().getWindow()));
@@ -232,19 +242,19 @@ public class ItemController {
     }
 
     // Test if all displayed text fields are filled and valid
-    private boolean isNoErrors() {
+    private boolean isNoErrors(String name, String serialNumber, String cost) {
         // verify each string is not empty
         // verify the name input is valid
         // verify the serial number input is valid
         // verify the cost input is valid
-        // if everything is valid, return true
-        // otherwise return false
+        return isNotEmpty(name,serialNumber,cost) && isNameValid(name) &&
+                isSerialNumberValid(serialNumber) && isCostValid(cost);
     }
 
     // Method for testing if any of the text fields are not filled
     private boolean isNotEmpty(String name, String serialNumber, String cost) {
         // if all three strings are not empty, return true
-        // otherwise return false
+        return (!name.isEmpty()) && (!serialNumber.isEmpty()) && (!cost.isEmpty());
     }
 
     // Method for testing the validity of the name
@@ -256,42 +266,62 @@ public class ItemController {
     // Note: the format is A-XXX-XXX-XXX
     private boolean isSerialNumberValid(String serialNumber) {
         // split the string into a size 4 array divided by '-'
-        // if there is not 4 strings in the array, there is not 4 '-'
+        String[] values = serialNumber.split("-",3);
+
+        // verify there are 4 strings in the array
+        if(values.length != 4) return false;
+
         // check if the first string is a single letter
+        if((values[0].length() != 1) || !(values[0].matches("^[a-zA-Z]*$"))) return false;
+
         // check if the second, third, and fourth strings are comprised of 3 letters or digits
-        // if everything is true, return true
-        // otherwise return false
+        for(int i = 1; i < 4; i++) {
+            if ((values[i].length() != 3) && !(values[i].matches("^([a-zA-Z](-[a-zA-Z0-9]+){3})$"))) return false;
+        }
+
+        // serial number must be valid
+        return true;
     }
 
     // Method for testing if the cost is valid
     private boolean isCostValid(String cost) {
-        // try to parse string to double
-        // if success, return true
-        // if an exception is thrown, return false
+        // determine if string can be parsed
+        try {
+            double success = Double.parseDouble(cost);
+            return true;
+        }
+        // catch non-numeric string
+        catch(NumberFormatException ex) {
+            return false;
+        }
     }
 
     // Method for changing the name error label visibility
     private void setNameErrorLabelInvisible(boolean value) {
-        // if true, set the label to visible
-        // if false, set the label to invisible
+        // set label visibility
+        if(value) errorNameLabel.setOpacity(1.0);
+        else errorNameLabel.setOpacity(0.0);
     }
 
     // Method for changing the serial number error label visibility
     private void setSerialNumberErrorLabelInvisible(boolean value) {
-        // if true, set the label to visible
-        // if false, set the label to invisible
+        // set label visibility
+        if(value) errorSerialLabel.setOpacity(1.0);
+        else errorSerialLabel.setOpacity(0.0);
     }
 
     // Method for changing the cost error label visibility
     private void setCostErrorLabelInvisible(boolean value) {
-        // if true, set the label to visible
-        // if false, set the label to invisible
+        // set label visibility
+        if(value) errorCostLabel.setOpacity(1.0);
+        else errorCostLabel.setOpacity(0.0);
     }
 
     // Method for changing the empty text fields error label visibility
     private void setBlankErrorLabelInvisible(boolean value) {
-        // if true, set the label to visible
-        // if false, set the label to invisible
+        // set label visibility
+        if(value) errorBlankLabel.setOpacity(1.0);
+        else errorBlankLabel.setOpacity(0.0);
     }
 
 }

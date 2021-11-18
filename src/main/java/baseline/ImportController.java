@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,6 +27,7 @@ import com.google.gson.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class ImportController {
 
@@ -60,9 +62,6 @@ public class ImportController {
 
     // Declare the loaded scene
     private Parent scene;
-
-    // Declare boolean representing if a selected file is valid
-    private boolean isValidFile;
 
     // Create the scene and copy the list of items from the main screen
     public ImportController(List<Item> inventory, Stage stage) {
@@ -119,33 +118,45 @@ public class ImportController {
         // determine the file extension of the selected file
         String extension = getFileExtension(filePath);
 
-        // if the extension is not one of the valid 3 options:
-            // display the error label
-            // set isFileValid to false
-        // if the extension is valid:
+        // determine if the file extension is valid
+        if(isValidFileExtension(extension)) {
             // hide the error label
-            // set isFileValid to true
+            errorLabelVisible(false);
+
             // set the path label to the file path
+            filePathLabel.setText(file.getPath());
+        }
+        else {
+            // show the error label
+            errorLabelVisible(true);
+
+            // empty the path label
+            filePathLabel.setText("");
+        }
     }
 
     // Extract the file path from a String as long as it is .txt., .html, or .json
     private String getFileExtension(String path) {
-        // get the last index of a '.' in the string
-        // grab the substring of values following that '.'
-        // if '.' could be found, return the substring
-        // otherwise return null
+        // get the last index of '.'
+        int extension = path.lastIndexOf('.');
+
+        // if the extension is > 0, return the extension
+        if(extension > 0) return path.substring(extension + 1);
+
+        // fail case
+        else return null;
     }
 
     // Determine if a string is one of the 3 valid file extensions
     private boolean isValidFileExtension(String extension) {
-        // if the extension is .txt, .html, or .json, return true
-        // otherwise return false
+        return (extension.equals("txt")) || (extension.equals("json")) || (extension.equals("html"));
     }
 
     // Determine the visibility of the error label
     private void errorLabelVisible(boolean value) {
-        // if value is true, set label to opacity of 1
-        // if value is false, set label to opacity of 0
+        // set label visibility
+        if(value) errorLabel.setOpacity(1.0);
+        else errorLabel.setOpacity(0.0);
     }
 
     // Attempt to import a list of items to the application
@@ -154,20 +165,29 @@ public class ImportController {
         // play click sound
         buttonSoundPlayer.play();
 
-        // if the file path is not selected:
+        // test if file path is valid
+        if(!isValidFileExtension(filePathLabel.getText())) {
             // display error
+            errorLabelVisible(true);
+
             // return from method
+            return;
+        }
 
         // attempt to open the file using the selected string path
         File importFile = openFile(filePathLabel.getText());
 
-        // if file could not be opened (importFile == null):
+        // null case
+        if(importFile == null) {
             // display error
+            errorLabelVisible(true);
+
             // return from method
-        // if file was found:
-            // it's guaranteed file extension is one of the three, so we proceed:
-            // change the saved inventory to the new list imported by the file
-            inventory = importItems(importFile);
+            return;
+        }
+
+        // override the current inventory to the new list imported by file
+        inventory = importItems(importFile);
 
         // return to old screen
         new MainSceneController(inventory,(Stage)(loadItemsButton.getScene().getWindow()));
@@ -176,8 +196,16 @@ public class ImportController {
     // Open a file given a string
     private File openFile(String path) {
         // try to return a new File from the file path
-        // catch exception:
-            // return null
+        try {
+            return new File(path);
+        }
+        catch(Exception e) {
+            // display error
+            errorLabelVisible(true);
+
+            // return from method
+            return null;
+        }
     }
 
     // Given a file, determine a method of parsing, and return the parsed list created by another method
@@ -185,50 +213,158 @@ public class ImportController {
     private List<Item> importItems(File file) {
         // get the file extension
         String fileExtension = file.getPath();
+        String fileType = getFileExtension(fileExtension);
 
-        // if the extension is txt, parse and return the TSV file
-        // if the extension is .json, parse and return the JSON file
-        // if the extension is .html, parse  and return the HTML file
+        // if txt, call parseTSVFile
+        if(fileType.equals("TSV")) return parseTSVFile(file);
+
+        // if JSON, call parseJSONFile
+        else if(fileType.equals("JSON")) return parseJSONFile(file);
+
+        // if html, call parseHTMLFile
+        else if(fileType.equals("HTML")) return parseHTMLFile(file);
+
+        // fail case
+        else return null;
     }
 
     // Parse a TSV file
     private List<Item> parseTSVFile(File file) {
-        // create new ArrayList<Item>
-        // create new Scanner for file
-        // while Scanner has input:
+        // create new list to be returned
+        List<Item> newList = new ArrayList<>();
+
+        // create new Scanner
+        Scanner stream = createScanner(file);
+
+        // null check
+        if(stream == null) {
+            // display error
+            errorLabelVisible(true);
+
+            // break method
+            return null;
+        }
+
+        // loop through the file
+        while(stream.hasNext()) {
             // read next line
+            String nextLine = stream.nextLine();
+
             // create new array of String
-            // split the line by "\t" character and populate String array
-            // add new Item to ArrayList using the 3 strings in the string array
+            String[] values = nextLine.split("\t",2);
+
+            // add new Item
+            newList.add(new Item(values[1],values[0],values[2]));
+        }
+
         // close the input stream
+        stream.close();
+
         // return the Array List
+        return newList;
     }
 
     // Parse a JSON file
     private List<Item> parseJSONFile(File file) {
         // create new ArrayList<Item>
+        List<Item> newList = new ArrayList<>();
+
         // create new JsonStreamParser from the file
+        JsonStreamParser stream = createJsonStream(file);
+
+        // null check
+        if(stream == null) {
+            // display error
+            errorLabelVisible(true);
+
+            // return from method
+            return null;
+        }
         // create new JsonArray from JsonStreamParser
-        // while the JsonArray has a next "item":
-            // get the next position "serial" JsonObject as a string
-            // get the next position "name" JsonObject as a string
-            // get the next position "cost" JsonObject as a string
+        JsonArray items = stream.next().getAsJsonArray();
+
+        // loop while the array still has items
+        for(int i = 0; i < items.size(); i++) {
             // add new Item to ArrayList using the 3 strings retrieved above
-        // close the input stream
+            newList.add(new Item(items.get(i).getAsJsonObject().get("name").getAsString(),
+                    items.get(i).getAsJsonObject().get("serialNumber").getAsString(),
+                    items.get(i).getAsJsonObject().get("cost").getAsString()));
+        }
+
         // return the Array List
+        return newList;
     }
 
     // Parse a HTML file
     private List<Item> parseHTMLFile(File file) {
         // create new ArrayList<Item>
-        // create new Scanner for file
-        // while Scanner has input of "<td>"
-            // find next "<td>"
-            // save line as string
-            // split the string by "</td>" and populate String array
-            // remove "<td>" from each string
-            // add new Item to ArrayList using the 3 strings in the string array
+        List<Item> newList = new ArrayList<>();
+
+        // create new Scanner
+        Scanner stream = createScanner(file);
+
+        // null check
+        if(stream == null) {
+            // display error
+            errorLabelVisible(true);
+
+            // break method
+            return null;
+        }
+
+        // read entire file into 1 string
+        String all = "";
+        while(stream.hasNext()) {
+            all += stream.nextLine();
+        }
+
+        // create array of strings broken by "<td>"
+        String items[] = all.split("</tr>",Integer.MAX_VALUE);
+
+        // separate values in string and create new item
+        for(String s: items) {
+            // split item values
+            String values[] = s.split("</td>",3);
+
+            // remove tags from each item
+            for(String v : values) {
+                v = v.replaceAll("<tr>","");
+                v = v.replaceAll("<td>","");
+            }
+
+            // add item to list
+            newList.add(new Item(values[1],values[0],values[2]));
+        }
+
         // close the input stream
+        stream.close();
+
         // return the Array List
+        return newList;
+    }
+
+    // Method which tries to create a JSON file stream
+    private JsonStreamParser createJsonStream(File file) {
+        // try to create stream
+        try {
+            // successfully created stream
+            return new JsonStreamParser(new InputStreamReader(new FileInputStream(file),StandardCharsets.UTF_8));
+        }
+        // file wasn't found
+        catch (FileNotFoundException e) {
+            return null;
+        }
+    }
+
+    private Scanner createScanner(File file) {
+        // try to create stream
+        try {
+            // successfully created stream
+            return new Scanner(file);
+        }
+        // file wasn't found
+        catch (FileNotFoundException e) {
+            return null;
+        }
     }
 }
