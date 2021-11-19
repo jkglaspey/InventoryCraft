@@ -227,18 +227,11 @@ public class ItemController {
             new MainSceneController(inventory,(Stage)(pane.getScene().getWindow()));
         }
         // if there are errors, display / hide the appropriate error labels
-        // first test if there are blank values
-        if(isNotEmpty(name,serialNumber,cost)) {
-            // hide blank error label
-            setBlankErrorLabelInvisible(true);
-
-            // run each test again using declared strings
-            setNameErrorLabelInvisible(isNameValid(name));
-            setSerialNumberErrorLabelInvisible(isSerialNumberValid(serialNumber));
-            setCostErrorLabelInvisible(isCostValid(cost));
-        }
-        // if there are blank values, make blank error label appear
-        setBlankErrorLabelInvisible(false);
+        // run each test again using declared strings
+        setBlankErrorLabelInvisible(isNotEmpty(name,serialNumber,cost));
+        setNameErrorLabelInvisible(isNameValid(name));
+        setSerialNumberErrorLabelInvisible(isSerialNumberValid(serialNumber));
+        setCostErrorLabelInvisible(isCostValid(cost));
     }
 
     // Test if all displayed text fields are filled and valid
@@ -247,26 +240,29 @@ public class ItemController {
         // verify the name input is valid
         // verify the serial number input is valid
         // verify the cost input is valid
-        return isNotEmpty(name,serialNumber,cost) && isNameValid(name) &&
-                isSerialNumberValid(serialNumber) && isCostValid(cost);
+        return (isNotEmpty(name,serialNumber,cost) && isNameValid(name) &&
+                isSerialNumberValid(serialNumber) && isCostValid(cost));
     }
 
     // Method for testing if any of the text fields are not filled
     private boolean isNotEmpty(String name, String serialNumber, String cost) {
         // if all three strings are not empty, return true
-        return (!name.isEmpty()) && (!serialNumber.isEmpty()) && (!cost.isEmpty());
+        return (!name.isBlank()) && (!serialNumber.isBlank()) && (!cost.isBlank());
     }
 
     // Method for testing the validity of the name
     private boolean isNameValid(String name) {
-        return name.length() > 2 && name.length() < 256;
+        return (name.length() >= 2) && (name.length() <= 256);
     }
 
     // Method for testing if the serial number input is valid
     // Note: the format is A-XXX-XXX-XXX
     private boolean isSerialNumberValid(String serialNumber) {
+        // verify there are 3 hyphens
+        if(serialNumber.chars().filter(ch -> ch == '-').count() != 3) return false;
+
         // split the string into a size 4 array divided by '-'
-        String[] values = serialNumber.split("-",3);
+        String[] values = serialNumber.split("-",4);
 
         // verify there are 4 strings in the array
         if(values.length != 4) return false;
@@ -276,7 +272,7 @@ public class ItemController {
 
         // check if the second, third, and fourth strings are comprised of 3 letters or digits
         for(int i = 1; i < 4; i++) {
-            if ((values[i].length() != 3) && !(values[i].matches("^([a-zA-Z](-[a-zA-Z0-9]+){3})$"))) return false;
+            if ((values[i].length() != 3) || !(values[i].matches("^[a-zA-Z0-9]+$"))) return false;
         }
 
         // serial number must be valid
@@ -287,7 +283,7 @@ public class ItemController {
     private boolean isCostValid(String cost) {
         // determine if string can be parsed
         try {
-            double success = Double.parseDouble(cost);
+            float success = Float.parseFloat(cost);
             return true;
         }
         // catch non-numeric string
@@ -299,29 +295,28 @@ public class ItemController {
     // Method for changing the name error label visibility
     private void setNameErrorLabelInvisible(boolean value) {
         // set label visibility
-        if(value) errorNameLabel.setOpacity(1.0);
-        else errorNameLabel.setOpacity(0.0);
+        if(value) errorNameLabel.setOpacity(0.0);
+        else errorNameLabel.setOpacity(1.0);
     }
 
     // Method for changing the serial number error label visibility
     private void setSerialNumberErrorLabelInvisible(boolean value) {
         // set label visibility
-        if(value) errorSerialLabel.setOpacity(1.0);
-        else errorSerialLabel.setOpacity(0.0);
+        if(value) errorSerialLabel.setOpacity(0.0);
+        else errorSerialLabel.setOpacity(1.0);
     }
 
     // Method for changing the cost error label visibility
     private void setCostErrorLabelInvisible(boolean value) {
         // set label visibility
-        if(value) errorCostLabel.setOpacity(1.0);
-        else errorCostLabel.setOpacity(0.0);
+        if(value) errorCostLabel.setOpacity(0.0);
+        else errorCostLabel.setOpacity(1.0);
     }
 
     // Method for changing the empty text fields error label visibility
     private void setBlankErrorLabelInvisible(boolean value) {
         // set label visibility
-        if(value) errorBlankLabel.setOpacity(1.0);
-        else errorBlankLabel.setOpacity(0.0);
+        if(value) errorBlankLabel.setOpacity(0.0);
+        else errorBlankLabel.setOpacity(1.0);
     }
-
 }

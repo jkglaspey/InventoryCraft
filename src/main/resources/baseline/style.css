@@ -90,25 +90,33 @@
 .text-field: hover {
     -fx-border-color: white;
 }
-.scroll-bar:horizontal .track,
 .scroll-bar:vertical .track{
     -fx-background-color: #000000;
     -fx-border-radius: 0px;
 }
-.scroll-bar:horizontal .thumb,
 .scroll-bar:vertical .thumb {
     -fx-background-color: #c0c0c0;
     -fx-border-radius: 0px;
     -fx-border-style: none;
 }
+.scroll-bar:horizontal .track {
+    -fx-background-color: transparent;
+}
+.scroll-bar:horizontal .thumb {
+    -fx-background-color: transparent;
+}
 .scroll-bar:vertical .increment-button ,
-.scroll-bar:vertical .decrement-button {
+.scroll-bar:vertical .decrement-button ,
+.scroll-bar:horizontal .increment-button ,
+.scroll-bar:horizontal .decrement-button {
     -fx-background-color: transparent;
     -fx-background-radius : 0.0em;
     -fx-padding :0.0 10.0 0.0 0.0;
 }
 .scroll-bar:vertical .increment-arrow,
-.scroll-bar:vertical .decrement-arrow {
+.scroll-bar:vertical .decrement-arrow,
+.scroll-bar:horizontal .increment-arrow,
+.scroll-bar:horizontal .decrement-arrow {
     -fx-shape : " ";
     -fx-padding :0.0 0.15em;
 }
@@ -146,8 +154,6 @@
 }
 .table-row-cell{
     -fx-background-color: transparent;
-    -fx-alignment: CENTER-LEFT;
-    -fx-font-color: #c0c0c0;
 }
 .table-row-cell:selected {
     -fx-background-color: transparent;
@@ -156,6 +162,12 @@
 }
 .table-column {
     -fx-border-color: transparent;
+    -fx-alignment: CENTER;
 }
-
-
+.table-cell {
+    -fx-text-fill: #c0c0c0;
+    -fx-font-color: #c0c0c0;
+}
+.text {
+    -fx-text-fill: #c0c0c0;
+}

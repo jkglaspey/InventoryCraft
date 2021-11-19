@@ -23,7 +23,9 @@ public class Item {
         // copy parameter items to the instance variables
         this.name = name;
         this.serialNumber = serialNumber;
-        this.cost = cost;
+
+        // convert cost to 2 decimal places
+        this.cost = convertCost(cost);
     }
 
     // Get the item name
@@ -56,5 +58,18 @@ public class Item {
     // Precondition: String can be cast to double
     public void setCost(String cost) {
         this.cost = cost;
+    }
+
+    // Convert a numerical string to monetary format, then convert back to string
+    private String convertCost(String cost) {
+        // convert string to number, round, and convert back to string
+        String temp = String.valueOf(Math.round(100 * Float.parseFloat(cost)) / 100.00);
+
+        // convert the string to be in USD format
+        temp = '$' + temp;
+        if(temp.charAt(temp.length() - 1) == '0') temp += '0';
+
+        // return the string to the new item
+        return temp;
     }
 }

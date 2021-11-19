@@ -89,6 +89,15 @@ public class ImportController {
     public void initialize() {
         // change error text color
         errorLabel.setStyle("-fx-text-fill: red");
+
+        // disable import button
+        disableLoadButton(true);
+
+        // add a listener for the path label
+        filePathLabel.textProperty().addListener((t) -> {
+            // enable the load button
+            disableLoadButton(false);
+        });
     }
 
     // Cancel the importing action
@@ -99,6 +108,12 @@ public class ImportController {
 
         // return to old screen
         new MainSceneController(inventory,(Stage)(loadItemsButton.getScene().getWindow()));
+    }
+
+    // Enable or disable the load button
+    private void disableLoadButton(boolean value) {
+        if(value) loadItemsButton.setDisable(true);
+        else loadItemsButton.setDisable(false);
     }
 
     // Open a file chooser to select a specific file to be read
@@ -166,9 +181,12 @@ public class ImportController {
         buttonSoundPlayer.play();
 
         // test if file path is valid
-        if(!isValidFileExtension(filePathLabel.getText())) {
+        if(!isValidFileExtension(getFileExtension(filePathLabel.getText()))) {
             // display error
             errorLabelVisible(true);
+
+            // disable load button
+            disableLoadButton(true);
 
             // return from method
             return;
@@ -181,6 +199,9 @@ public class ImportController {
         if(importFile == null) {
             // display error
             errorLabelVisible(true);
+
+            // disable load button
+            disableLoadButton(true);
 
             // return from method
             return;

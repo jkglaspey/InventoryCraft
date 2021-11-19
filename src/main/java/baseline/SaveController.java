@@ -204,7 +204,7 @@ public class SaveController {
     // Method which determines the validity of the specified file path
     // Note: this is only for if the user decides to delete the file path after specifying it
     private boolean isFilePathInvalid(String path) {
-        return !(Files.exists(Paths.get(path)));
+        return (path.isBlank()) || !(Files.exists(Paths.get(path)));
     }
 
     // Method which changes the visibility of the error message
@@ -238,19 +238,11 @@ public class SaveController {
 
         // append each item to the TSV file
         for(Item i : inventory) {
-            // create a new String builder with the serial number as the first value
+            // create a new String builder representing the item as a new line
             StringBuilder temp = new StringBuilder(i.getSerialNumber());
-
-            // add tab
             temp.append("\t");
-
-            // add the name
             temp.append(i.getName());
-
-            // add tab
             temp.append("\t");
-
-            // add the cost
             temp.append(i.getCost());
 
             // write to new line in file
@@ -294,7 +286,7 @@ public class SaveController {
         }
     }
 
-    // Save the inventory to a HTML file
+    // Save the inventory to HTML file
     private void saveToHTML(String path, String name) {
         // combine the file path, name, and extension
         String save = combinePath(path,name,".html");
@@ -317,8 +309,12 @@ public class SaveController {
         }
 
         // write a basic heading
-        stream.format("<html><head><title>%s</title></head><body>",name);
-        stream.format("<table><tr><th>Serial Number</th><th>Name</th><th>Cost ($)<t/h>");
+        stream.format("<html><body><table>" +
+                "<style type=\"text/css\">\n" +
+                "  td {\n" +
+                "    padding: 0 15px;\n" +
+                "  }\n" +
+                "</style><tr><th>Serial Number\t</th><th>Name\t</th><th>Cost<t/h>");
 
         // loop through inventory
         for(Item i: inventory) {
@@ -326,7 +322,7 @@ public class SaveController {
             stream.format("<tr><td>%s</td><td>%s</td><td>%s</td></tr>",i.getSerialNumber(),i.getName(),i.getCost());
         }
         // write closing tags
-        stream.format("<\table></body></html>");
+        stream.format("</table></body></html>");
 
         // close stream
         stream.close();
@@ -335,6 +331,6 @@ public class SaveController {
     // Concatenate parts of a string together
     private String combinePath(String path, String name, String extension) {
         // return the combined string
-        return path + name + extension;
+        return path + "\\" + name + extension;
     }
 }

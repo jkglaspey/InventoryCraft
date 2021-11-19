@@ -18,6 +18,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.*;
 import javafx.scene.media.AudioClip;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -166,6 +169,11 @@ public class MainSceneController {
 
     // Initialize values
     public void initialize() {
+        // align text in tableview
+        nameColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+        serialColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+        monetaryColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+
         // change middle background values
         middleControls.setStyle("-fx-background-image: url('/baseline/image/middlebackground.png')");
         itemView.setStyle("-fx-background-image: url('/baseline/image/tablebackground.png')");
@@ -190,12 +198,27 @@ public class MainSceneController {
         bottomControls.setHgrow(positionPane5,Priority.ALWAYS);
         bottomControls.setHgrow(positionPane6,Priority.ALWAYS);
 
+        //inventory.add(new Item("Item 1","A-AAA-AAA-AAA","10.00"));
+        //inventory.add(new Item("Item 2","A-AA2-AAA-AAA","20.00"));
+        //inventory.add(new Item("Item 3","A-AA3-AAA-AAA","30.00"));
+
         // get values from inventory
         resetListToInventory();
 
         // initialize the description column
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        nameColumn.setCellFactory((t) -> {
+            TableCell<Item, String> cell = new TableCell<>();
+            Text text = new Text();
+            cell.setGraphic(text);
+            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            text.wrappingWidthProperty().bind(nameColumn.widthProperty());
+            text.textProperty().bind(cell.itemProperty());
+            text.setFill(Color.valueOf("#c0c0c0"));
+            text.setTextAlignment(TextAlignment.RIGHT);
+            //text.setStyle("-fx-alignment: CENTER-LEFT;");
+            return cell;
+        });
         nameColumn.setOnEditCommit( t -> (
                 t.getTableView().getItems().get(t.getTablePosition().getRow())).setName(t.getNewValue()));
 
@@ -211,11 +234,33 @@ public class MainSceneController {
         monetaryColumn.setOnEditCommit( t -> (
                 t.getTableView().getItems().get(t.getTablePosition().getRow())).setCost(t.getNewValue()));
 
-        listOfItems.add(new Item("Name 1","Serial 1", "1"));
-        listOfItems.add(new Item("Name 2","Serial 2", "2"));
-
         // set the values in the table to the observable list
         itemView.setItems(listOfItems);
+
+        // disable the edit button
+        editButtonDisabled(true);
+
+        // setup listener for selecting a table item
+        itemView.getSelectionModel().selectedItemProperty().addListener((click,oldValue,newValue) -> {
+            // all items were deleted, disable edit button
+            if(itemView.getSelectionModel().isEmpty()) {
+                editButtonDisabled(true);
+                return;
+            }
+
+            // verify an item was clicked
+            try {
+                itemView.getSelectionModel().getSelectedIndex();
+            }
+            // there's no selected item, so disable edit button
+            catch (Exception e) {
+                editButtonDisabled(true);
+                return;
+            }
+
+            // enable edit button
+            editButtonDisabled(false);
+        });
     }
 
     // refresh the table view to update values
@@ -226,6 +271,9 @@ public class MainSceneController {
 
     // reset values in list to inventory
     private void resetListToInventory() {
+        // clear current list
+        listOfItems.clear();
+
         // copy inventory to list
         for(Item i: inventory) {
             listOfItems.add(i);
@@ -298,6 +346,12 @@ public class MainSceneController {
 
         // search fails
         return -1;
+    }
+
+    // Disable / enable the edit item button depending on if an item was selected
+    private void editButtonDisabled(boolean value) {
+        if(value) editItemButton.setDisable(true);
+        else editItemButton.setDisable(false);
     }
 
     // Open a new scene where the user can use a file chooser to select a saved inventory
