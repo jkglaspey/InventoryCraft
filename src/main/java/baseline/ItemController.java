@@ -10,6 +10,7 @@ package baseline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -19,6 +20,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.AudioClip;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -172,12 +174,19 @@ public class ItemController {
         errorCostLabel.setStyle("-fx-text-fill: red");
         errorBlankLabel.setStyle("-fx-text-fill: red");
 
+        // right justify error text
+        errorNameLabel.setAlignment(Pos.BASELINE_RIGHT);
+        errorSerialLabel.setAlignment(Pos.BASELINE_RIGHT);
+        errorCostLabel.setAlignment(Pos.BASELINE_RIGHT);
+
         // determine which button was pressed
         if(index < inventory.size()) {
             // copy the item fields to text fields
             nameTextField.setText(inventory.get(index).getName());
             serialTextField.setText(inventory.get(index).getSerialNumber());
-            costTextField.setText(String.valueOf(inventory.get(index).getCost()));
+
+            // remove the '$' from the cost
+            costTextField.setText(String.valueOf(inventory.get(index).getCost()).substring(1));
 
             // change the confirm button text to "Edit Item"
             confirmButton.setText("Edit Item");
@@ -230,7 +239,9 @@ public class ItemController {
         // run each test again using declared strings
         setBlankErrorLabelInvisible(isNotEmpty(name,serialNumber,cost));
         setNameErrorLabelInvisible(isNameValid(name));
-        setSerialNumberErrorLabelInvisible(isSerialNumberValid(serialNumber));
+        boolean serialNumberUnique = isSerialNumberUnique(serialNumber,index,inventory);
+        changeSerialNumberText(serialNumberUnique);
+        setSerialNumberErrorLabelInvisible(serialNumberUnique && isSerialNumberValid(serialNumber));
         setCostErrorLabelInvisible(isCostValid(cost));
     }
 
@@ -240,8 +251,8 @@ public class ItemController {
         // verify the name input is valid
         // verify the serial number input is valid
         // verify the cost input is valid
-        return (isNotEmpty(name,serialNumber,cost) && isNameValid(name) &&
-                isSerialNumberValid(serialNumber) && isCostValid(cost));
+        return (isNotEmpty(name,serialNumber,cost) && isNameValid(name) && isCostValid(cost)) &&
+                isSerialNumberValid(serialNumber) && isSerialNumberUnique(serialNumber,index,inventory);
     }
 
     // Method for testing if any of the text fields are not filled
@@ -313,10 +324,33 @@ public class ItemController {
         else errorCostLabel.setOpacity(1.0);
     }
 
+    // Method for testing if a serial number is unique
+    private boolean isSerialNumberUnique(String serialNumber, int index, List<Item> list) {
+        // loop through the list
+        for(int i = 0; i < list.size(); i++) {
+            // if index value ever equals loop index, skip current check
+            if(i == index) continue;
+
+            // if serial numbers match, return false
+            if(serialNumber.equals(list.get(i).getSerialNumber())) return false;
+        }
+        // otherwise return true
+        return true;
+    }
+
     // Method for changing the empty text fields error label visibility
     private void setBlankErrorLabelInvisible(boolean value) {
         // set label visibility
         if(value) errorBlankLabel.setOpacity(0.0);
         else errorBlankLabel.setOpacity(1.0);
+    }
+
+    // Method for changing the text of the serial number error label
+    private void changeSerialNumberText(boolean value) {
+        // if serial number is unique, change to invalid error
+        if(value) errorSerialLabel.setText("Must be in the correct format!");
+
+        // else change to not-unique error
+        else errorSerialLabel.setText("Must be unique!");
     }
 }

@@ -314,7 +314,7 @@ public class SaveController {
                 "  td {\n" +
                 "    padding: 0 15px;\n" +
                 "  }\n" +
-                "</style><tr><th>Serial Number\t</th><th>Name\t</th><th>Cost<t/h>");
+                "</style><tr><th>Serial Number\t</th><th>Name\t</th><th>Cost</th></tr>");
 
         // loop through inventory
         for(Item i: inventory) {

@@ -24,6 +24,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -171,8 +172,8 @@ public class MainSceneController {
     public void initialize() {
         // align text in tableview
         nameColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
-        serialColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
-        monetaryColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+        serialColumn.setStyle("-fx-alignment: TOP-RIGHT;");
+        monetaryColumn.setStyle("-fx-alignment: TOP-RIGHT;");
 
         // change middle background values
         middleControls.setStyle("-fx-background-image: url('/baseline/image/middlebackground.png')");
@@ -198,39 +199,54 @@ public class MainSceneController {
         bottomControls.setHgrow(positionPane5,Priority.ALWAYS);
         bottomControls.setHgrow(positionPane6,Priority.ALWAYS);
 
-        //inventory.add(new Item("Item 1","A-AAA-AAA-AAA","10.00"));
-        //inventory.add(new Item("Item 2","A-AA2-AAA-AAA","20.00"));
-        //inventory.add(new Item("Item 3","A-AA3-AAA-AAA","30.00"));
-
         // get values from inventory
         resetListToInventory();
 
         // initialize the description column
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         nameColumn.setCellFactory((t) -> {
+            // set cell to item name
             TableCell<Item, String> cell = new TableCell<>();
             Text text = new Text();
             cell.setGraphic(text);
+
+            // set cell properties
             cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
             text.wrappingWidthProperty().bind(nameColumn.widthProperty());
             text.textProperty().bind(cell.itemProperty());
             text.setFill(Color.valueOf("#c0c0c0"));
             text.setTextAlignment(TextAlignment.RIGHT);
-            //text.setStyle("-fx-alignment: CENTER-LEFT;");
+
+            // display the text
             return cell;
         });
         nameColumn.setOnEditCommit( t -> (
                 t.getTableView().getItems().get(t.getTablePosition().getRow())).setName(t.getNewValue()));
 
-        // initialize the date column
+        // initialize the serial number column
         serialColumn.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
         serialColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         serialColumn.setOnEditCommit( t -> (
                 t.getTableView().getItems().get(t.getTablePosition().getRow())).setSerialNumber(t.getNewValue()));
 
-        // initialize the status column
+        // initialize the cost column
         monetaryColumn.setCellValueFactory(new PropertyValueFactory<>("cost"));
-        monetaryColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        monetaryColumn.setCellFactory((t) -> {
+            // set cell to item cost
+            TableCell<Item, String> cell = new TableCell<>();
+            Text text = new Text();
+            cell.setGraphic(text);
+
+            // set cell properties
+            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            text.wrappingWidthProperty().bind(monetaryColumn.widthProperty());
+            text.textProperty().bind(cell.itemProperty());
+            text.setFill(Color.valueOf("#c0c0c0"));
+            text.setTextAlignment(TextAlignment.RIGHT);
+
+            // display the text
+            return cell;
+        });
         monetaryColumn.setOnEditCommit( t -> (
                 t.getTableView().getItems().get(t.getTablePosition().getRow())).setCost(t.getNewValue()));
 
@@ -271,6 +287,12 @@ public class MainSceneController {
 
     // reset values in list to inventory
     private void resetListToInventory() {
+        // null check
+        if(inventory == null) {
+            inventory = new ArrayList<Item>();
+            return;
+        }
+
         // clear current list
         listOfItems.clear();
 

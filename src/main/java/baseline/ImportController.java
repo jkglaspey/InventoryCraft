@@ -19,15 +19,12 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import com.google.gson.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 public class ImportController {
 
@@ -130,6 +127,12 @@ public class ImportController {
             filePath = file.getPath();
         }
 
+        // if string is empty, leave method
+        if(filePath.isBlank()) {
+            // leave method
+            return;
+        }
+
         // determine the file extension of the selected file
         String extension = getFileExtension(filePath);
 
@@ -165,6 +168,12 @@ public class ImportController {
     // Determine if a string is one of the 3 valid file extensions
     private boolean isValidFileExtension(String extension) {
         return (extension.equals("txt")) || (extension.equals("json")) || (extension.equals("html"));
+    }
+
+    // Enable / disable the error label
+    private void isErrorLabelVisible(boolean value) {
+        if(value) errorLabel.setOpacity(1.0);
+        else errorLabel.setOpacity(0.0);
     }
 
     // Determine the visibility of the error label
@@ -237,13 +246,13 @@ public class ImportController {
         String fileType = getFileExtension(fileExtension);
 
         // if txt, call parseTSVFile
-        if(fileType.equals("TSV")) return parseTSVFile(file);
+        if(fileType.equals("txt")) return parseTSVFile(file);
 
         // if JSON, call parseJSONFile
-        else if(fileType.equals("JSON")) return parseJSONFile(file);
+        else if(fileType.equals("json")) return parseJSONFile(file);
 
         // if html, call parseHTMLFile
-        else if(fileType.equals("HTML")) return parseHTMLFile(file);
+        else if(fileType.equals("html")) return parseHTMLFile(file);
 
         // fail case
         else return null;
@@ -267,15 +276,15 @@ public class ImportController {
         }
 
         // loop through the file
-        while(stream.hasNext()) {
+        while(stream.hasNextLine()) {
             // read next line
             String nextLine = stream.nextLine();
 
             // create new array of String
-            String[] values = nextLine.split("\t",2);
+            String[] values = nextLine.split("\t",3);
 
             // add new Item
-            newList.add(new Item(values[1],values[0],values[2]));
+            newList.add(new Item(values[1],values[0],values[2].substring(1)));
         }
 
         // close the input stream
@@ -301,15 +310,15 @@ public class ImportController {
             // return from method
             return null;
         }
-        // create new JsonArray from JsonStreamParser
-        JsonArray items = stream.next().getAsJsonArray();
-
         // loop while the array still has items
-        for(int i = 0; i < items.size(); i++) {
+        while(stream.hasNext()) {
+            // create new JSONObject for item
+            JsonObject item = stream.next().getAsJsonObject();
+
             // add new Item to ArrayList using the 3 strings retrieved above
-            newList.add(new Item(items.get(i).getAsJsonObject().get("name").getAsString(),
-                    items.get(i).getAsJsonObject().get("serialNumber").getAsString(),
-                    items.get(i).getAsJsonObject().get("cost").getAsString()));
+            newList.add(new Item(item.get("name").getAsString(),
+                    item.get("serialNumber").getAsString(),
+                    item.get("cost").getAsString().substring(1)));
         }
 
         // return the Array List
@@ -340,21 +349,31 @@ public class ImportController {
         }
 
         // create array of strings broken by "<td>"
-        String items[] = all.split("</tr>",Integer.MAX_VALUE);
+        String split[] = all.split("</tr>",Integer.MAX_VALUE);
+
+        // remove first and last value (html tags)
+        List<String> items = new ArrayList<>(Arrays.asList(split));
+        items.remove(items.size() - 1);
+        items.remove(0);
 
         // separate values in string and create new item
         for(String s: items) {
+            // if value is null, terminate
+            if(s == null) break;
+
             // split item values
             String values[] = s.split("</td>",3);
 
             // remove tags from each item
-            for(String v : values) {
-                v = v.replaceAll("<tr>","");
-                v = v.replaceAll("<td>","");
+            for(int i = 0; i < 3; i++) {
+                values[i] = values[i].replace("</td>","");
+                values[i] = values[i].replace("<td>","");
+                values[i] = values[i].replace("<tr>","");
+                values[i] = values[i].replace("</tr>","");
             }
 
             // add item to list
-            newList.add(new Item(values[1],values[0],values[2]));
+            newList.add(new Item(values[1],values[0],values[2].substring(1)));
         }
 
         // close the input stream

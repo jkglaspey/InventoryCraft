@@ -154,6 +154,7 @@
 }
 .table-row-cell{
     -fx-background-color: transparent;
+    -fx-cell-size: 58px;
 }
 .table-row-cell:selected {
     -fx-background-color: transparent;
@@ -167,7 +168,4 @@
 .table-cell {
     -fx-text-fill: #c0c0c0;
     -fx-font-color: #c0c0c0;
-}
-.text {
-    -fx-text-fill: #c0c0c0;
 }
