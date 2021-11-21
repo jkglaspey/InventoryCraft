@@ -155,7 +155,7 @@ public class SaveController {
     }
 
     // Method to determine which exporting method to call
-    protected void chooseFile(String fileType) {
+    private void chooseFile(String fileType) {
         // determine which file type to export as
         switch (fileType) {
             // if TSV, call saveToTSV()
@@ -175,7 +175,7 @@ public class SaveController {
 
     // Method which determines the validity of the specified file path
     // Note: this is only for if the user decides to delete the file path after specifying it
-    protected boolean isFilePathInvalid(String path) {
+    private boolean isFilePathInvalid(String path) {
         return (path.isBlank()) || !(Files.exists(Paths.get(path)));
     }
 
@@ -187,7 +187,7 @@ public class SaveController {
     }
 
     // Save the inventory to a TSV file
-    protected void saveToTSV(String path, String name) {
+    private void saveToTSV(String path, String name) {
         // combine the file path, name, and extension
         String save = combinePath(path, name, ".txt");
 
@@ -222,7 +222,7 @@ public class SaveController {
     }
 
     // Save the inventory to a JSON file
-    protected void saveToJSON(String path, String name) {
+    private void saveToJSON(String path, String name) {
         // combine the file path, name, and extension
         String save = combinePath(path,name,".json");
 
@@ -255,7 +255,7 @@ public class SaveController {
     }
 
     // Save the inventory to HTML file
-    protected void saveToHTML(String path, String name) {
+    private void saveToHTML(String path, String name) {
         // combine the file path, name, and extension
         String save = combinePath(path,name,".html");
 
@@ -299,7 +299,7 @@ public class SaveController {
     }
 
     // Concatenate parts of a string together
-    protected String combinePath(String path, String name, String extension) {
+    private String combinePath(String path, String name, String extension) {
         // return the combined string
         return path + "/" + name + extension;
     }

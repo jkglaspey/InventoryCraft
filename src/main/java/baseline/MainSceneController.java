@@ -278,7 +278,7 @@ public class MainSceneController {
     }
 
     // reset values in list to inventory
-    protected void resetListToInventory() {
+    private void resetListToInventory() {
         // null check
         if(inventory == null) {
             inventory = new ArrayList<>();
@@ -350,7 +350,7 @@ public class MainSceneController {
     }
 
     // Search for the index of an item by serial number
-    protected int getIndex(Item item) {
+    private int getIndex(Item item) {
         for(int i = 0; i < inventory.size(); i++) {
             // compare serial numbers and break when unique duplicate is found
             if(inventory.get(i).getSerialNumber().equals(item.getSerialNumber())) return i;
@@ -403,7 +403,7 @@ public class MainSceneController {
     }
 
     // Search for a specific item name in the inventory
-    protected void searchForName(String name) {
+    private void searchForName(String name) {
         // empty listOfItems
         listOfItems.clear();
 
@@ -414,7 +414,7 @@ public class MainSceneController {
     }
 
     // Search for a specific item serial number in the inventory
-    protected void searchForSerialNumber(String serialNumber) {
+    private void searchForSerialNumber(String serialNumber) {
         // empty listOfItems
         listOfItems.clear();
 

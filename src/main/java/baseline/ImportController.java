@@ -140,7 +140,7 @@ public class ImportController {
     }
 
     // Extract the file path from a String as long as it is .txt., .html, or .json
-    protected String getFileExtension(String path) {
+    private String getFileExtension(String path) {
         // get the last index of '.'
         int extension = path.lastIndexOf('.');
 
@@ -152,7 +152,7 @@ public class ImportController {
     }
 
     // Determine if a string is one of the 3 valid file extensions
-    protected boolean isValidFileExtension(String extension) {
+    private boolean isValidFileExtension(String extension) {
         return (extension.equals("txt")) || (extension.equals("json")) || (extension.equals("html"));
     }
 
@@ -204,7 +204,7 @@ public class ImportController {
     }
 
     // Open a file given a string
-    protected File openFile(String path) {
+    private File openFile(String path) {
         // try to return a new File from the file path
         try {
             return new File(path);
@@ -220,7 +220,7 @@ public class ImportController {
 
     // Given a file, determine a method of parsing, and return the parsed list created by another method
     // Precondition: file is not null, and is one of three extensions
-    protected List<Item> importItems(File file) {
+    private List<Item> importItems(File file) {
         // get the file extension
         String fileExtension = file.getPath();
         String fileType = getFileExtension(fileExtension);
@@ -242,7 +242,7 @@ public class ImportController {
     }
 
     // Parse a TSV file
-    protected List<Item> parseTSVFile(File file) {
+    private List<Item> parseTSVFile(File file) {
         // create new list to be returned
         List<Item> newList = new ArrayList<>();
 
@@ -278,7 +278,7 @@ public class ImportController {
     }
 
     // Parse a JSON file
-    protected List<Item> parseJSONFile(File file) {
+    private List<Item> parseJSONFile(File file) {
         // create new ArrayList<Item>
         List<Item> newList = new ArrayList<>();
 
@@ -334,7 +334,7 @@ public class ImportController {
     }
 
     // Parse a HTML file
-    protected List<Item> parseHTMLFile(File file) {
+    private List<Item> parseHTMLFile(File file) {
         // create new ArrayList<Item>
         List<Item> newList = new ArrayList<>();
 
@@ -392,13 +392,13 @@ public class ImportController {
     }
 
     // Method which creates a JSON file stream
-    protected JsonStreamParser createJsonStream(FileInputStream stream) {
+    private JsonStreamParser createJsonStream(FileInputStream stream) {
         if(stream != null) return new JsonStreamParser(new InputStreamReader(stream,StandardCharsets.UTF_8));
         else return null;
     }
 
     // Method which tries to create a Scanner stream
-    protected Scanner createScanner(File file) {
+    private Scanner createScanner(File file) {
         // try to create stream
         try {
             // successfully created stream

@@ -61,7 +61,7 @@ public class Item {
     }
 
     // Convert a numerical string to monetary format, then convert back to string
-    protected String convertCost(String cost) {
+    private String convertCost(String cost) {
         // convert string to number, round, and convert back to string
         String temp = String.valueOf(Math.round(100 * Float.parseFloat(cost)) / 100.00);
 

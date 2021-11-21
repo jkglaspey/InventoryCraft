@@ -202,7 +202,7 @@ public class ItemController {
     }
 
     // Test if all displayed text fields are filled and valid
-    protected boolean isNoErrors(String name, String serialNumber, String cost) {
+    private boolean isNoErrors(String name, String serialNumber, String cost) {
         // verify each string is not empty
         // verify the name input is valid
         // verify the serial number input is valid
@@ -212,19 +212,19 @@ public class ItemController {
     }
 
     // Method for testing if any of the text fields are not filled
-    protected boolean isNotEmpty(String name, String serialNumber, String cost) {
+    private boolean isNotEmpty(String name, String serialNumber, String cost) {
         // if all three strings are not empty, return true
         return (!name.isBlank()) && (!serialNumber.isBlank()) && (!cost.isBlank());
     }
 
     // Method for testing the validity of the name
-    protected boolean isNameValid(String name) {
+    private boolean isNameValid(String name) {
         return (name.length() >= 2) && (name.length() <= 256);
     }
 
     // Method for testing if the serial number input is valid
     // Note: the format is A-XXX-XXX-XXX
-    protected boolean isSerialNumberValid(String serialNumber) {
+    private boolean isSerialNumberValid(String serialNumber) {
         // verify there are 3 hyphens
         if(serialNumber.chars().filter(ch -> ch == '-').count() != 3) return false;
 
@@ -247,7 +247,7 @@ public class ItemController {
     }
 
     // Method for testing if the cost is valid
-    protected boolean isCostValid(String cost) {
+    private boolean isCostValid(String cost) {
         // determine if string can be parsed
         try {
             Float.parseFloat(cost);
@@ -281,7 +281,7 @@ public class ItemController {
     }
 
     // Method for testing if a serial number is unique
-    protected boolean isSerialNumberUnique(String serialNumber, int index, List<Item> list) {
+    private boolean isSerialNumberUnique(String serialNumber, int index, List<Item> list) {
         // loop through the list
         for(int i = 0; i < list.size(); i++) {
             // if index value ever equals loop index, skip current check
