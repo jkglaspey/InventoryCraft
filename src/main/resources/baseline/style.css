@@ -91,7 +91,7 @@
     -fx-border-color: white;
 }
 .scroll-bar:vertical .track{
-    -fx-background-color: #000000;
+    -fx-background-color: black;
     -fx-border-radius: 0px;
 }
 .scroll-bar:vertical .thumb {
@@ -147,7 +147,7 @@
     -fx-background-image: url("image/middlebackground.png");
 }
 .table-view .column-header .label {
-    -fx-alignment: center-right;
+    -fx-alignment: center-left;
     -fx-font-size: 16pt;
     -fx-font-weight: bold;
     -fx-padding: 0 10 0 0;

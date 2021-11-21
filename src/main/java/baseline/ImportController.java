@@ -27,15 +27,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class ImportController {
-
-    // Button for cancelling the current action
-    @FXML
-    private Button cancelButton;
-
-    // Button for opening a file chooser to select a file
-    @FXML
-    private Button chooseFileButton;
-
     // Label that is displayed when there is an error with the input file
     @FXML
     private Label errorLabel;
@@ -49,16 +40,10 @@ public class ImportController {
     private Button loadItemsButton;
 
     // Declare sound for clicking button
-    private final AudioClip buttonSoundPlayer = new AudioClip(getClass().getResource("sound/buttonClick.mp3").toExternalForm());
+    private final AudioClip buttonSoundPlayer = new AudioClip(Objects.requireNonNull(getClass().getResource("sound/buttonClick.mp3")).toExternalForm());
 
     // Grab the previous inventory
     private List<Item> inventory;
-
-    // Declare a fxml loader
-    private FXMLLoader root;
-
-    // Declare the loaded scene
-    private Parent scene;
 
     // Create the scene and copy the list of items from the main screen
     public ImportController(List<Item> inventory, Stage stage) {
@@ -66,8 +51,10 @@ public class ImportController {
         this.inventory = inventory;
 
         // load the correct fxml file
-        root = null;
-        scene = null;
+        // Declare a fxml loader
+        FXMLLoader root;
+        // Declare the loaded scene
+        Parent scene;
         try {
             root = new FXMLLoader(Objects.requireNonNull(getClass().getResource("importScene.fxml")));
             root.setController(this);
@@ -82,6 +69,11 @@ public class ImportController {
         stage.show();
     }
 
+    // Create default controller (for testing)
+    public ImportController() {
+        inventory = new ArrayList<>();
+    }
+
     // Initialize specific FXML values
     public void initialize() {
         // change error text color
@@ -91,10 +83,7 @@ public class ImportController {
         disableLoadButton(true);
 
         // add a listener for the path label
-        filePathLabel.textProperty().addListener((t) -> {
-            // enable the load button
-            disableLoadButton(false);
-        });
+        filePathLabel.textProperty().addListener(t -> disableLoadButton(false));
     }
 
     // Cancel the importing action
@@ -109,8 +98,7 @@ public class ImportController {
 
     // Enable or disable the load button
     private void disableLoadButton(boolean value) {
-        if(value) loadItemsButton.setDisable(true);
-        else loadItemsButton.setDisable(false);
+        loadItemsButton.setDisable(value);
     }
 
     // Open a file chooser to select a specific file to be read
@@ -133,15 +121,13 @@ public class ImportController {
             return;
         }
 
-        // determine the file extension of the selected file
-        String extension = getFileExtension(filePath);
-
         // determine if the file extension is valid
-        if(isValidFileExtension(extension)) {
+        if(isValidFileExtension(getFileExtension(filePath))) {
             // hide the error label
             errorLabelVisible(false);
 
             // set the path label to the file path
+            assert file != null;
             filePathLabel.setText(file.getPath());
         }
         else {
@@ -154,7 +140,7 @@ public class ImportController {
     }
 
     // Extract the file path from a String as long as it is .txt., .html, or .json
-    private String getFileExtension(String path) {
+    protected String getFileExtension(String path) {
         // get the last index of '.'
         int extension = path.lastIndexOf('.');
 
@@ -162,18 +148,12 @@ public class ImportController {
         if(extension > 0) return path.substring(extension + 1);
 
         // fail case
-        else return null;
+        else return "";
     }
 
     // Determine if a string is one of the 3 valid file extensions
-    private boolean isValidFileExtension(String extension) {
+    protected boolean isValidFileExtension(String extension) {
         return (extension.equals("txt")) || (extension.equals("json")) || (extension.equals("html"));
-    }
-
-    // Enable / disable the error label
-    private void isErrorLabelVisible(boolean value) {
-        if(value) errorLabel.setOpacity(1.0);
-        else errorLabel.setOpacity(0.0);
     }
 
     // Determine the visibility of the error label
@@ -224,7 +204,7 @@ public class ImportController {
     }
 
     // Open a file given a string
-    private File openFile(String path) {
+    protected File openFile(String path) {
         // try to return a new File from the file path
         try {
             return new File(path);
@@ -240,26 +220,29 @@ public class ImportController {
 
     // Given a file, determine a method of parsing, and return the parsed list created by another method
     // Precondition: file is not null, and is one of three extensions
-    private List<Item> importItems(File file) {
+    protected List<Item> importItems(File file) {
         // get the file extension
         String fileExtension = file.getPath();
         String fileType = getFileExtension(fileExtension);
 
-        // if txt, call parseTSVFile
-        if(fileType.equals("txt")) return parseTSVFile(file);
+        // determine which file type to parse
+        return switch (fileType) {
+            // if txt, call parseTSVFile
+            case "txt" -> parseTSVFile(file);
 
-        // if JSON, call parseJSONFile
-        else if(fileType.equals("json")) return parseJSONFile(file);
+            // if JSON, call parseJSONFile
+            case "json" -> parseJSONFile(file);
 
-        // if html, call parseHTMLFile
-        else if(fileType.equals("html")) return parseHTMLFile(file);
+            // if html, call parseHTMLFile
+            case "html" -> parseHTMLFile(file);
 
-        // fail case
-        else return null;
+            // fail case
+            default -> null;
+        };
     }
 
     // Parse a TSV file
-    private List<Item> parseTSVFile(File file) {
+    protected List<Item> parseTSVFile(File file) {
         // create new list to be returned
         List<Item> newList = new ArrayList<>();
 
@@ -272,7 +255,7 @@ public class ImportController {
             errorLabelVisible(true);
 
             // break method
-            return null;
+            return Collections.emptyList();
         }
 
         // loop through the file
@@ -295,12 +278,25 @@ public class ImportController {
     }
 
     // Parse a JSON file
-    private List<Item> parseJSONFile(File file) {
+    protected List<Item> parseJSONFile(File file) {
         // create new ArrayList<Item>
         List<Item> newList = new ArrayList<>();
 
+        // create closeable stream
+        FileInputStream fileInputStream;
+        try {
+            fileInputStream = new FileInputStream(file);
+        }
+        catch (FileNotFoundException e) {
+            // display error
+            errorLabelVisible(true);
+
+            // return from method
+            return Collections.emptyList();
+        }
+
         // create new JsonStreamParser from the file
-        JsonStreamParser stream = createJsonStream(file);
+        JsonStreamParser stream = createJsonStream(fileInputStream);
 
         // null check
         if(stream == null) {
@@ -308,7 +304,7 @@ public class ImportController {
             errorLabelVisible(true);
 
             // return from method
-            return null;
+            return Collections.emptyList();
         }
         // loop while the array still has items
         while(stream.hasNext()) {
@@ -321,12 +317,24 @@ public class ImportController {
                     item.get("cost").getAsString().substring(1)));
         }
 
+        // close stream
+        try {
+            fileInputStream.close();
+        }
+        catch (IOException e) {
+            // display error
+            errorLabelVisible(true);
+
+            // return from method
+            return Collections.emptyList();
+        }
+
         // return the Array List
         return newList;
     }
 
     // Parse a HTML file
-    private List<Item> parseHTMLFile(File file) {
+    protected List<Item> parseHTMLFile(File file) {
         // create new ArrayList<Item>
         List<Item> newList = new ArrayList<>();
 
@@ -339,17 +347,17 @@ public class ImportController {
             errorLabelVisible(true);
 
             // break method
-            return null;
+            return Collections.emptyList();
         }
 
         // read entire file into 1 string
-        String all = "";
+        StringBuilder all = new StringBuilder();
         while(stream.hasNext()) {
-            all += stream.nextLine();
+            all.append(stream.nextLine());
         }
 
         // create array of strings broken by "<td>"
-        String split[] = all.split("</tr>",Integer.MAX_VALUE);
+        String[] split = all.toString().split("</tr>",Integer.MAX_VALUE);
 
         // remove first and last value (html tags)
         List<String> items = new ArrayList<>(Arrays.asList(split));
@@ -362,7 +370,7 @@ public class ImportController {
             if(s == null) break;
 
             // split item values
-            String values[] = s.split("</td>",3);
+            String[] values = s.split("</td>",3);
 
             // remove tags from each item
             for(int i = 0; i < 3; i++) {
@@ -383,20 +391,14 @@ public class ImportController {
         return newList;
     }
 
-    // Method which tries to create a JSON file stream
-    private JsonStreamParser createJsonStream(File file) {
-        // try to create stream
-        try {
-            // successfully created stream
-            return new JsonStreamParser(new InputStreamReader(new FileInputStream(file),StandardCharsets.UTF_8));
-        }
-        // file wasn't found
-        catch (FileNotFoundException e) {
-            return null;
-        }
+    // Method which creates a JSON file stream
+    protected JsonStreamParser createJsonStream(FileInputStream stream) {
+        if(stream != null) return new JsonStreamParser(new InputStreamReader(stream,StandardCharsets.UTF_8));
+        else return null;
     }
 
-    private Scanner createScanner(File file) {
+    // Method which tries to create a Scanner stream
+    protected Scanner createScanner(File file) {
         // try to create stream
         try {
             // successfully created stream

@@ -8,19 +8,14 @@
 package baseline;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.AudioClip;
 import javafx.stage.DirectoryChooser;
@@ -29,21 +24,11 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.Format;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Objects;
 
 public class SaveController {
-
-    // Declare button for cancelling the action
-    @FXML
-    private Button cancelButton;
-
-    // Declare button for opening a directory
-    @FXML
-    private Button chooseFileButton;
-
     // Declare a label that will display an error if the file path is invalid or blank
     @FXML
     private Label errorLabel;
@@ -60,54 +45,26 @@ public class SaveController {
     @FXML
     private Label filePathLabel;
 
-    // Declare a box to horizontally position each of the controls
-    @FXML
-    private HBox hBox;
-
-    // Declare a radio button to select exporting a file as .html
-    @FXML
-    private RadioButton htmlButton;
-
-    // Declare a radio button to select exporting a file as .json
-    @FXML
-    private RadioButton jsonButton;
-
     // Declare the parent pane
     @FXML
     private StackPane pane;
 
-    // Declare a pane for positioning controls
-    @FXML
-    private Pane positionPane1;
-
-    // Declare a button to attempt to save an inventory to a file in the local storage
-    @FXML
-    private Button saveButton;
-
-    // Declare a radio button to select exporting a file as .txt
-    @FXML
-    private RadioButton tsvButton;
-
     // Declare sound for clicking button
-    private final AudioClip buttonSoundPlayer = new AudioClip(getClass().getResource("sound/buttonClick.mp3").toExternalForm());
-    private final AudioClip smallButtonSoundPlayer = new AudioClip(getClass().getResource("sound/smallButtonClick.mp3").toExternalForm());
+    private final AudioClip buttonSoundPlayer = new AudioClip(Objects.requireNonNull(getClass().getResource("sound/buttonClick.mp3")).toExternalForm());
+    private final AudioClip smallButtonSoundPlayer = new AudioClip(Objects.requireNonNull(getClass().getResource("sound/smallButtonClick.mp3")).toExternalForm());
 
     // Grab the previous inventory
-    private List<Item> inventory;
-
-    // Declare a fxml loader
-    private FXMLLoader root;
-
-    // Declare the loaded scene
-    private Parent scene;
+    private final List<Item> inventory;
 
     // Declare constructor to create scene
     public SaveController(List<Item> inventory, Stage stage) {
         this.inventory = inventory;
 
         // load the correct fxml file
-        root = null;
-        scene = null;
+        // Declare a fxml loader
+        FXMLLoader root;
+        // Declare the loaded scene
+        Parent scene;
         try {
             root = new FXMLLoader(Objects.requireNonNull(getClass().getResource("saveScene.fxml")));
             root.setController(this);
@@ -120,6 +77,11 @@ public class SaveController {
         // open the scene
         stage.getScene().setRoot(scene);
         stage.show();
+    }
+
+    // Declare different constructor for testing
+    public SaveController(List<Item> list) {
+        this.inventory = list;
     }
 
     // Change the error color
@@ -184,26 +146,36 @@ public class SaveController {
         // set error label invisible
         isErrorLabelVisible(false);
 
-        // get the selected button from the radio group
+        // get the selected button from the radio group and run the file exporting
         RadioButton selectedButton = (RadioButton)fileButtons.getSelectedToggle();
-        String fileType = selectedButton.getText();
-
-        // if TSV, call saveToTSV()
-        if(fileType.equals("TSV")) saveToTSV(filePathLabel.getText(),fileNameField.getText());
-
-        // if JSON, call saveToJSON()
-        else if(fileType.equals("JSON")) saveToJSON(filePathLabel.getText(),fileNameField.getText());
-
-        // if html, call saveToHTML()
-        else if(fileType.equals("HTML")) saveToHTML(filePathLabel.getText(),fileNameField.getText());
+        chooseFile(selectedButton.getText());
 
         // return to old screen
         new MainSceneController(inventory,(Stage)(pane.getScene().getWindow()));
     }
 
+    // Method to determine which exporting method to call
+    protected void chooseFile(String fileType) {
+        // determine which file type to export as
+        switch (fileType) {
+            // if TSV, call saveToTSV()
+            case "TSV" -> saveToTSV(filePathLabel.getText(), fileNameField.getText());
+
+            // if JSON, call saveToJSON()
+            case "JSON" -> saveToJSON(filePathLabel.getText(), fileNameField.getText());
+
+            // if html, call saveToHTML()
+            case "HTML" -> saveToHTML(filePathLabel.getText(), fileNameField.getText());
+
+            // to satisfy SonarLint
+            default -> {
+            }
+        }
+    }
+
     // Method which determines the validity of the specified file path
     // Note: this is only for if the user decides to delete the file path after specifying it
-    private boolean isFilePathInvalid(String path) {
+    protected boolean isFilePathInvalid(String path) {
         return (path.isBlank()) || !(Files.exists(Paths.get(path)));
     }
 
@@ -215,13 +187,13 @@ public class SaveController {
     }
 
     // Save the inventory to a TSV file
-    private void saveToTSV(String path, String name) {
+    protected void saveToTSV(String path, String name) {
         // combine the file path, name, and extension
         String save = combinePath(path, name, ".txt");
 
         // attempt to initialize an output stream
-        File file = null;
-        Formatter stream = null;
+        File file;
+        Formatter stream;
         try {
             // create a file from the string path
             file = new File(save);
@@ -239,14 +211,10 @@ public class SaveController {
         // append each item to the TSV file
         for(Item i : inventory) {
             // create a new String builder representing the item as a new line
-            StringBuilder temp = new StringBuilder(i.getSerialNumber());
-            temp.append("\t");
-            temp.append(i.getName());
-            temp.append("\t");
-            temp.append(i.getCost());
+            String temp = i.getSerialNumber() + "\t" + i.getName() + "\t" + i.getCost();
 
             // write to new line in file
-            stream.format("%s\n",temp.toString());
+            stream.format("%s%n", temp);
         }
 
         // close Formatter
@@ -254,7 +222,7 @@ public class SaveController {
     }
 
     // Save the inventory to a JSON file
-    private void saveToJSON(String path, String name) {
+    protected void saveToJSON(String path, String name) {
         // combine the file path, name, and extension
         String save = combinePath(path,name,".json");
 
@@ -281,13 +249,13 @@ public class SaveController {
             isErrorLabelVisible(true);
 
             // delete partially created file (if it exists)
-            File deleteFile = new File(save);
-            deleteFile.delete();
+            // note: boolean result is ignored
+            new File(save).delete();
         }
     }
 
     // Save the inventory to HTML file
-    private void saveToHTML(String path, String name) {
+    protected void saveToHTML(String path, String name) {
         // combine the file path, name, and extension
         String save = combinePath(path,name,".html");
 
@@ -295,7 +263,7 @@ public class SaveController {
         File file = new File(save);
 
         // try to create a formatter stream to the file
-        Formatter stream = null;
+        Formatter stream;
         try {
             stream = new Formatter(new FileOutputStream(file));
         }
@@ -309,12 +277,14 @@ public class SaveController {
         }
 
         // write a basic heading
-        stream.format("<html><body><table>" +
-                "<style type=\"text/css\">\n" +
-                "  td {\n" +
-                "    padding: 0 15px;\n" +
-                "  }\n" +
-                "</style><tr><th>Serial Number\t</th><th>Name\t</th><th>Cost</th></tr>");
+        stream.format("""
+                <html><body><table>
+                <style type="text/css">
+                  td {
+                    padding: 0 15px;
+                  }
+                </style><tr><th>Serial Number\t</th><th>Name\t</th><th>Cost</th></tr>
+                """);
 
         // loop through inventory
         for(Item i: inventory) {
@@ -322,15 +292,15 @@ public class SaveController {
             stream.format("<tr><td>%s</td><td>%s</td><td>%s</td></tr>",i.getSerialNumber(),i.getName(),i.getCost());
         }
         // write closing tags
-        stream.format("</table></body></html>");
+        stream.format("%s","</table></body></html>");
 
         // close stream
         stream.close();
     }
 
     // Concatenate parts of a string together
-    private String combinePath(String path, String name, String extension) {
+    protected String combinePath(String path, String name, String extension) {
         // return the combined string
-        return path + "\\" + name + extension;
+        return path + "/" + name + extension;
     }
 }

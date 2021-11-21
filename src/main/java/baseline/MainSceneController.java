@@ -38,19 +38,11 @@ public class MainSceneController {
     @FXML
     private HBox bottomControls;
 
-    // Declare radio button which searches for an item by name
-    @FXML
-    private RadioButton buttonName;
-
-    // Declare button which deletes all items when pushed
-    @FXML
-    private Button deleteAllItemsButton;
-
-    // Declare button which deletes the selected item when pushed
+    // Declare button which allows the user to delete the selected item
     @FXML
     private Button deleteItemButton;
 
-    // Declare button which allows the user to edit the selected item when pushed
+    // Declare button which allows the user to edit the selected item
     @FXML
     private Button editItemButton;
 
@@ -59,14 +51,10 @@ public class MainSceneController {
     private TableView<Item> itemView;
 
     // Declare observable list for holding only the viewable items (either ALL or searched results)
-    private ObservableList<Item> listOfItems = FXCollections.observableArrayList();
+    private final ObservableList<Item> listOfItems = FXCollections.observableArrayList();
 
     // Declare list for holding all items in an inventory
     private List<Item> inventory;
-
-    // Declare button for loading in a previously-saved inventory of items
-    @FXML
-    private Button loadInventoryButton;
 
     // Declare container for center table view
     @FXML
@@ -79,10 +67,6 @@ public class MainSceneController {
     // Declare column holding the names of each item
     @FXML
     private TableColumn<Item, String> nameColumn;
-
-    // Declare button for adding a new item to the inventory
-    @FXML
-    private Button newItemButton;
 
     // Declare parent pane for all controls
     @FXML
@@ -112,17 +96,9 @@ public class MainSceneController {
     @FXML
     private Pane positionPane6;
 
-    // Declare button for saving the current inventory as a file
-    @FXML
-    private Button saveInventoryButton;
-
     // Declare group for allowing the user to change the search query
     @FXML
     private ToggleGroup searchButtons;
-
-    // Declare radio button which searches for an item by serial number
-    @FXML
-    private RadioButton serialButton;
 
     // Declare column holding the serial numbers of each item
     @FXML
@@ -136,15 +112,12 @@ public class MainSceneController {
     @FXML
     private HBox topControls;
 
-    // Declare a fxml loader
-    private FXMLLoader root;
-
     // Declare the loaded scene
     private Parent scene;
 
     // Initialize button-click sounds
-    private final AudioClip buttonSoundPlayer = new AudioClip(getClass().getResource("sound/buttonClick.mp3").toExternalForm());
-    private final AudioClip smallButtonSoundPlayer = new AudioClip(getClass().getResource("sound/smallButtonClick.mp3").toExternalForm());
+    private final AudioClip buttonSoundPlayer = new AudioClip(Objects.requireNonNull(getClass().getResource("sound/buttonClick.mp3")).toExternalForm());
+    private final AudioClip smallButtonSoundPlayer = new AudioClip(Objects.requireNonNull(getClass().getResource("sound/smallButtonClick.mp3")).toExternalForm());
 
     // Call constructor to display the inventory to the user
     public MainSceneController(List<Item> inventory, Stage stage) {
@@ -152,7 +125,8 @@ public class MainSceneController {
         this.inventory = inventory;
 
         // load the correct fxml file
-        root = null;
+        // Declare a fxml loader
+        FXMLLoader root;
         scene = null;
         try {
             root = new FXMLLoader(Objects.requireNonNull(getClass().getResource("mainScene.fxml")));
@@ -168,12 +142,30 @@ public class MainSceneController {
         stage.show();
     }
 
+    // Create constructor for testing values
+    public MainSceneController() {
+        inventory = new ArrayList<>();
+    }
+
+    // Get the current inventory
+    public List<Item> getInventory() {
+        return inventory;
+    }
+
+    // Get the current list of items
+    public ObservableList<Item> getListOfItems() {
+        return listOfItems;
+    }
+
     // Initialize values
     public void initialize() {
+        // change column resize policy
+        itemView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+
         // align text in tableview
-        nameColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
-        serialColumn.setStyle("-fx-alignment: TOP-RIGHT;");
-        monetaryColumn.setStyle("-fx-alignment: TOP-RIGHT;");
+        nameColumn.setStyle("-fx-alignment: CENTER-LEFT;");
+        serialColumn.setStyle("-fx-alignment: TOP-LEFT;");
+        monetaryColumn.setStyle("-fx-alignment: TOP-LEFT;");
 
         // change middle background values
         middleControls.setStyle("-fx-background-image: url('/baseline/image/middlebackground.png')");
@@ -187,35 +179,35 @@ public class MainSceneController {
         bindPane.prefHeightProperty().bind(pane.heightProperty());
 
         // keep controls in vertical center
-        bindPane.setVgrow(topControls,Priority.ALWAYS);
-        bindPane.setVgrow(middleControls,Priority.ALWAYS);
-        bindPane.setVgrow(bottomControls,Priority.ALWAYS);
+        VBox.setVgrow(topControls,Priority.ALWAYS);
+        VBox.setVgrow(middleControls,Priority.ALWAYS);
+        VBox.setVgrow(bottomControls,Priority.ALWAYS);
 
         // keep controls in horizontal center
-        topControls.setHgrow(positionPane1,Priority.ALWAYS);
-        topControls.setHgrow(positionPane2,Priority.ALWAYS);
-        middleControls.setHgrow(positionPane3,Priority.ALWAYS);
-        middleControls.setHgrow(positionPane4,Priority.ALWAYS);
-        bottomControls.setHgrow(positionPane5,Priority.ALWAYS);
-        bottomControls.setHgrow(positionPane6,Priority.ALWAYS);
+        HBox.setHgrow(positionPane1,Priority.ALWAYS);
+        HBox.setHgrow(positionPane2,Priority.ALWAYS);
+        HBox.setHgrow(positionPane3,Priority.ALWAYS);
+        HBox.setHgrow(positionPane4,Priority.ALWAYS);
+        HBox.setHgrow(positionPane5,Priority.ALWAYS);
+        HBox.setHgrow(positionPane6,Priority.ALWAYS);
 
         // get values from inventory
         resetListToInventory();
 
         // initialize the description column
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        nameColumn.setCellFactory((t) -> {
+        nameColumn.setCellFactory(t -> {
             // set cell to item name
             TableCell<Item, String> cell = new TableCell<>();
             Text text = new Text();
             cell.setGraphic(text);
 
             // set cell properties
-            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            cell.setPrefHeight(Region.USE_COMPUTED_SIZE);
             text.wrappingWidthProperty().bind(nameColumn.widthProperty());
             text.textProperty().bind(cell.itemProperty());
             text.setFill(Color.valueOf("#c0c0c0"));
-            text.setTextAlignment(TextAlignment.RIGHT);
+            text.setTextAlignment(TextAlignment.LEFT);
 
             // display the text
             return cell;
@@ -231,18 +223,18 @@ public class MainSceneController {
 
         // initialize the cost column
         monetaryColumn.setCellValueFactory(new PropertyValueFactory<>("cost"));
-        monetaryColumn.setCellFactory((t) -> {
+        monetaryColumn.setCellFactory(t -> {
             // set cell to item cost
             TableCell<Item, String> cell = new TableCell<>();
             Text text = new Text();
             cell.setGraphic(text);
 
             // set cell properties
-            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            cell.setPrefHeight(Region.USE_COMPUTED_SIZE);
             text.wrappingWidthProperty().bind(monetaryColumn.widthProperty());
             text.textProperty().bind(cell.itemProperty());
             text.setFill(Color.valueOf("#c0c0c0"));
-            text.setTextAlignment(TextAlignment.RIGHT);
+            text.setTextAlignment(TextAlignment.LEFT);
 
             // display the text
             return cell;
@@ -254,13 +246,13 @@ public class MainSceneController {
         itemView.setItems(listOfItems);
 
         // disable the edit button
-        editButtonDisabled(true);
+        buttonsDisabled(true);
 
         // setup listener for selecting a table item
         itemView.getSelectionModel().selectedItemProperty().addListener((click,oldValue,newValue) -> {
             // all items were deleted, disable edit button
             if(itemView.getSelectionModel().isEmpty()) {
-                editButtonDisabled(true);
+                buttonsDisabled(true);
                 return;
             }
 
@@ -270,12 +262,12 @@ public class MainSceneController {
             }
             // there's no selected item, so disable edit button
             catch (Exception e) {
-                editButtonDisabled(true);
+                buttonsDisabled(true);
                 return;
             }
 
             // enable edit button
-            editButtonDisabled(false);
+            buttonsDisabled(false);
         });
     }
 
@@ -286,10 +278,10 @@ public class MainSceneController {
     }
 
     // reset values in list to inventory
-    private void resetListToInventory() {
+    protected void resetListToInventory() {
         // null check
         if(inventory == null) {
-            inventory = new ArrayList<Item>();
+            inventory = new ArrayList<>();
             return;
         }
 
@@ -297,9 +289,7 @@ public class MainSceneController {
         listOfItems.clear();
 
         // copy inventory to list
-        for(Item i: inventory) {
-            listOfItems.add(i);
-        }
+        listOfItems.addAll(inventory);
     }
 
     // Create a new item by opening a new scene
@@ -360,7 +350,7 @@ public class MainSceneController {
     }
 
     // Search for the index of an item by serial number
-    private int getIndex(Item item) {
+    protected int getIndex(Item item) {
         for(int i = 0; i < inventory.size(); i++) {
             // compare serial numbers and break when unique duplicate is found
             if(inventory.get(i).getSerialNumber().equals(item.getSerialNumber())) return i;
@@ -371,9 +361,9 @@ public class MainSceneController {
     }
 
     // Disable / enable the edit item button depending on if an item was selected
-    private void editButtonDisabled(boolean value) {
-        if(value) editItemButton.setDisable(true);
-        else editItemButton.setDisable(false);
+    private void buttonsDisabled(boolean value) {
+        editItemButton.setDisable(value);
+        deleteItemButton.setDisable(value);
     }
 
     // Open a new scene where the user can use a file chooser to select a saved inventory
@@ -413,7 +403,7 @@ public class MainSceneController {
     }
 
     // Search for a specific item name in the inventory
-    private void searchForName(String name) {
+    protected void searchForName(String name) {
         // empty listOfItems
         listOfItems.clear();
 
@@ -424,7 +414,7 @@ public class MainSceneController {
     }
 
     // Search for a specific item serial number in the inventory
-    private void searchForSerialNumber(String serialNumber) {
+    protected void searchForSerialNumber(String serialNumber) {
         // empty listOfItems
         listOfItems.clear();
 

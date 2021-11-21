@@ -15,28 +15,16 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.media.AudioClip;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class ItemController {
-
-    // Declare box for positioning bottom two buttons
-    @FXML
-    private HBox buttonsHBox;
-
-    // Declare button for cancelling the current action
-    @FXML
-    private Button cancelButton;
-
     // Declare text field for modifying the cost
     @FXML
     private TextField costTextField;
@@ -57,10 +45,6 @@ public class ItemController {
     @FXML
     private Label errorSerialLabel;
 
-    // Declare box for positioning the name label
-    @FXML
-    private HBox nameLabelBox;
-
     // Declare text field for modifying the name
     @FXML
     private TextField nameTextField;
@@ -73,56 +57,21 @@ public class ItemController {
     @FXML
     private StackPane pane;
 
-    // Declare a pane for holding the controls in a proper position
-    @FXML
-    private Pane positionPane1;
-
-    // Declare a pane for holding the controls in a proper position
-    @FXML
-    private Pane positionPane2;
-
-    // Declare a pane for holding the controls in a proper position
-    @FXML
-    private Pane positionPaneSmall1;
-
-    // Declare a pane for holding the controls in a proper position
-    @FXML
-    private Pane positionPaneSmall2;
-
-    // Declare a pane for holding the controls in a proper position
-    @FXML
-    private Pane positionPaneSmall3;
-
     // Declare text field for modifying the serial number
     @FXML
     private TextField serialTextField;
-
-    // Declare box for horizontally positioning the text fields on the scene
-    @FXML
-    private HBox textHBox;
-
-    // Declare box for vertically positioning the text fields on the scene
-    @FXML
-    private VBox textVBox;
-
-    // Declare box for vertically stacking every control on the scene
-    @FXML
-    private VBox vbox;
 
     // Declare index of item being inserted
     private final int index;
 
     // Declare sound for clicking button
-    private final AudioClip buttonSoundPlayer = new AudioClip(getClass().getResource("sound/buttonClick.mp3").toExternalForm());
+    private final AudioClip buttonSoundPlayer = new AudioClip(Objects.requireNonNull(getClass().getResource("sound/buttonClick.mp3")).toExternalForm());
 
     // Grab the previous inventory
-    private List<Item> inventory;
+    private final List<Item> inventory;
 
-    // Declare a fxml loader
-    private FXMLLoader root;
-
-    // Declare the loaded scene
-    private Parent scene;
+    // Define a constant for fx effects
+    private static final String RED = "-fx-text-fill: red";
 
     // Call scene to create a new item
     public ItemController(List<Item> inventory, Stage stage) {
@@ -134,6 +83,12 @@ public class ItemController {
 
         // load the correct fxml file
         loadScene(stage);
+    }
+
+    // Create a no-parameter controller for testing
+    public ItemController() {
+        inventory = new ArrayList<>();
+        index = 0;
     }
 
     // Call scene to edit an existing item
@@ -150,8 +105,9 @@ public class ItemController {
 
     // Load the item scene
     private void loadScene(Stage stage) {
-        root = null;
-        scene = null;
+        FXMLLoader root;
+        // Declare the loaded scene
+        Parent scene;
         try {
             root = new FXMLLoader(Objects.requireNonNull(getClass().getResource("itemScene.fxml")));
             root.setController(this);
@@ -169,10 +125,10 @@ public class ItemController {
     // Initialize fxml values
     public void initialize() {
         // change error text color
-        errorNameLabel.setStyle("-fx-text-fill: red");
-        errorSerialLabel.setStyle("-fx-text-fill: red");
-        errorCostLabel.setStyle("-fx-text-fill: red");
-        errorBlankLabel.setStyle("-fx-text-fill: red");
+        errorNameLabel.setStyle(RED);
+        errorSerialLabel.setStyle(RED);
+        errorCostLabel.setStyle(RED);
+        errorBlankLabel.setStyle(RED);
 
         // right justify error text
         errorNameLabel.setAlignment(Pos.BASELINE_RIGHT);
@@ -246,7 +202,7 @@ public class ItemController {
     }
 
     // Test if all displayed text fields are filled and valid
-    private boolean isNoErrors(String name, String serialNumber, String cost) {
+    protected boolean isNoErrors(String name, String serialNumber, String cost) {
         // verify each string is not empty
         // verify the name input is valid
         // verify the serial number input is valid
@@ -256,19 +212,19 @@ public class ItemController {
     }
 
     // Method for testing if any of the text fields are not filled
-    private boolean isNotEmpty(String name, String serialNumber, String cost) {
+    protected boolean isNotEmpty(String name, String serialNumber, String cost) {
         // if all three strings are not empty, return true
         return (!name.isBlank()) && (!serialNumber.isBlank()) && (!cost.isBlank());
     }
 
     // Method for testing the validity of the name
-    private boolean isNameValid(String name) {
+    protected boolean isNameValid(String name) {
         return (name.length() >= 2) && (name.length() <= 256);
     }
 
     // Method for testing if the serial number input is valid
     // Note: the format is A-XXX-XXX-XXX
-    private boolean isSerialNumberValid(String serialNumber) {
+    protected boolean isSerialNumberValid(String serialNumber) {
         // verify there are 3 hyphens
         if(serialNumber.chars().filter(ch -> ch == '-').count() != 3) return false;
 
@@ -291,10 +247,10 @@ public class ItemController {
     }
 
     // Method for testing if the cost is valid
-    private boolean isCostValid(String cost) {
+    protected boolean isCostValid(String cost) {
         // determine if string can be parsed
         try {
-            float success = Float.parseFloat(cost);
+            Float.parseFloat(cost);
             return true;
         }
         // catch non-numeric string
@@ -325,7 +281,7 @@ public class ItemController {
     }
 
     // Method for testing if a serial number is unique
-    private boolean isSerialNumberUnique(String serialNumber, int index, List<Item> list) {
+    protected boolean isSerialNumberUnique(String serialNumber, int index, List<Item> list) {
         // loop through the list
         for(int i = 0; i < list.size(); i++) {
             // if index value ever equals loop index, skip current check
@@ -334,7 +290,7 @@ public class ItemController {
             // if serial numbers match, return false
             if(serialNumber.equals(list.get(i).getSerialNumber())) return false;
         }
-        // otherwise return true
+        // otherwise, return true
         return true;
     }
 

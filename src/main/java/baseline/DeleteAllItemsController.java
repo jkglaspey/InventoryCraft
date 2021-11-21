@@ -25,21 +25,11 @@ public class DeleteAllItemsController {
     @FXML
     private Button cancelButton;
 
-    // Button for deleting all items from the current inventory
-    @FXML
-    private Button deleteButton;
-
     // Declare sound for clicking button
-    private final AudioClip buttonSoundPlayer = new AudioClip(getClass().getResource("sound/buttonClick.mp3").toExternalForm());
+    private final AudioClip buttonSoundPlayer = new AudioClip(Objects.requireNonNull(getClass().getResource("sound/buttonClick.mp3")).toExternalForm());
 
     // Grab the previous inventory
-    private List<Item> inventory;
-
-    // Declare a fxml loader
-    private FXMLLoader root;
-
-    // Declare the loaded scene
-    private Parent scene;
+    private final List<Item> inventory;
 
     // Initialize the scene
     public DeleteAllItemsController(List<Item> inventory, Stage stage) {
@@ -47,8 +37,10 @@ public class DeleteAllItemsController {
         this.inventory = inventory;
 
         // load the correct fxml file
-        root = null;
-        scene = null;
+        // Declare a fxml loader
+        FXMLLoader root;
+        // Declare the loaded scene
+        Parent scene;
         try {
             root = new FXMLLoader(Objects.requireNonNull(getClass().getResource("deleteAllItemsScene.fxml")));
             root.setController(this);

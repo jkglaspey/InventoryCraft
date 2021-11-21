@@ -69,16 +69,8 @@ public class LoadSceneController {
     @FXML
     private Label versionLabel;
 
-    // Declare pane for holding y-positions of controls
-    @FXML
-    private VBox vBox;
-
-    // Declare pane for holding x-positions of controls
-    @FXML
-    private HBox hBox;
-
     // Initialize button-click sound
-    AudioClip soundPlayer = new AudioClip(getClass().getResource("sound/buttonClick.mp3").toExternalForm());
+    private final AudioClip soundPlayer = new AudioClip(Objects.requireNonNull(getClass().getResource("sound/buttonClick.mp3")).toExternalForm());
 
     // Initialize values
     public void initialize() {
@@ -98,8 +90,8 @@ public class LoadSceneController {
         paneColor.prefHeightProperty().bind(pane.heightProperty());
 
         // hold button positions
-        vBox.setVgrow(pane1,Priority.ALWAYS);
-        vBox.setVgrow(pane4,Priority.ALWAYS);
+        VBox.setVgrow(pane1,Priority.ALWAYS);
+        VBox.setVgrow(pane4,Priority.ALWAYS);
 
         // play first media
         loadView.setMediaPlayer(loadBarPlayer);
@@ -133,7 +125,7 @@ public class LoadSceneController {
             fadeInLabel.play();
 
             // listen for fade to end, then appear buttons
-            fadeInBackground.setOnFinished((e) -> {
+            fadeInBackground.setOnFinished(e -> {
                 // change user guide button to have a gif background
                 userGuideButton.setStyle("-fx-background-image: url('/baseline/image/buttonuserguide.gif')");
 
@@ -162,7 +154,7 @@ public class LoadSceneController {
         soundPlayer.play();
 
         // set the scene to a new window
-        MainSceneController scene = new MainSceneController(new ArrayList<>(),(Stage)(pane.getScene().getWindow()));
+        new MainSceneController(new ArrayList<>(),(Stage)(pane.getScene().getWindow()));
     }
 
     // Method which closes the system
@@ -178,15 +170,12 @@ public class LoadSceneController {
         soundPlayer.play();
 
         // try to open link to site
+        // note: this is not customizable because it opens a specific link to my repository
         try {
             Desktop.getDesktop().browse(new URI("https://github.com/jkglaspey/glaspey-app2"));
         }
         // could not open browser
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        // could not recognize link address
-        catch (URISyntaxException e) {
+        catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
     }

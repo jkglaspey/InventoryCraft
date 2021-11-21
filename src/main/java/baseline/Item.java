@@ -57,11 +57,11 @@ public class Item {
     // Set the item cost
     // Precondition: String can be cast to double
     public void setCost(String cost) {
-        this.cost = cost;
+        this.cost = convertCost(cost);
     }
 
     // Convert a numerical string to monetary format, then convert back to string
-    private String convertCost(String cost) {
+    protected String convertCost(String cost) {
         // convert string to number, round, and convert back to string
         String temp = String.valueOf(Math.round(100 * Float.parseFloat(cost)) / 100.00);
 
